@@ -1,0 +1,11 @@
+curl "http://localhost:8080/users/login"  -H "Accept: application/json" -H "Content-type: application/json" -X POST -d "{\"Username\":\"test\",\"Password\":\"123456\"}"
+
+curl http://localhost:8080/users/user/giu -H "X-AUTH-TOKEN: a8669342-4c1d-4c3e-988f-d551e8e965b7"
+curl http://localhost:8080/users/count
+curl http://localhost:8080/users
+
+curl "http://localhost:8080/users"  -H "Accept: application/json" -H "Content-type: application/json" -X POST -d "{\"Username\":\"test\",\"Password\":\"1234\",\"Role\":\"admin\"}"
+curl http://localhost:8080/users/user/test
+curl "http://localhost:8080/users"  -H "Accept: application/json" -H "Content-type: application/json" -X PUT -d "{\"Username\":\"test\",\"Password\":\"5678\",\"Role\":\"admin\"}"
+curl "http://localhost:8080/users/login"  -H "Accept: application/json" -H "Content-type: application/json" -X POST -d "{\"Username\":\"test\",\"Password\":\"56789\",\"Role\":\"admin\"}"
+curl "http://localhost:8080/users"  -H "Accept: application/json" -H "Content-type: application/json" -X DELETE -d "{\"Username\":\"test\"}"
