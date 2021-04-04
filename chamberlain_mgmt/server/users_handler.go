@@ -8,12 +8,10 @@ import (
 	"strings"
 )
 
-const AUTH_HEADER string = "X-AUTH-TOKEN"
-
 func AuthHandler() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		log.Info("begin to check auth")
-		tokenId := context.GetHeader(AUTH_HEADER)
+		tokenId := context.GetHeader(AuthHeader)
 		if tokenId == "" {
 			context.JSON(400, gin.H{
 				"result": "no authorization for no auth token",
@@ -25,6 +23,11 @@ func AuthHandler() gin.HandlerFunc {
 		token.TokenId = tokenId
 		log.Info("request url = %s", context.Request.RequestURI)
 		url := context.Request.RequestURI
+		indexOfParam := strings.Index(url, "?")
+		if indexOfParam > 0 {
+			url = url[0:indexOfParam]
+		}
+		log.Info("url = %s", url)
 		arr := strings.Split(url, "/")
 		log.Info("operation = %s", arr[1])
 		isAuthed, err := token.CheckAuth(arr[1])
@@ -65,7 +68,6 @@ func GetUsersHandler() gin.HandlerFunc {
 		limitInt, _ := strconv.Atoi(limit)
 		offsetInt, _ := strconv.Atoi(offset)
 
-		users := make([]auth.User, 0)
 		user := new(auth.User)
 		users, err := user.GetUsers(offsetInt, limitInt)
 		if err != nil {
@@ -83,9 +85,7 @@ func GetUsersCountHandler() gin.HandlerFunc {
 		if err != nil {
 			context.String(500, err.Error())
 		} else {
-			context.JSON(200, gin.H{
-				"count": usersCount,
-			})
+			context.JSON(200, gin.H{"count": usersCount})
 		}
 	}
 }
@@ -100,7 +100,7 @@ func AddUserHandler() gin.HandlerFunc {
 			return
 		}
 		log.Info("username = " + user.Username)
-		user.Role = "User"
+		user.Role = "user"
 		err = user.Adduser()
 		if err != nil {
 			context.String(500, err.Error())
@@ -143,6 +143,7 @@ func DeleteUserHandler() gin.HandlerFunc {
 			context.String(500, err.Error())
 			return
 		}
+		log.Info("delete the user %s", user.Username)
 		err = user.DeleteUser()
 		if err != nil {
 			context.String(500, err.Error())
@@ -181,7 +182,7 @@ func LoginHandler() gin.HandlerFunc {
 
 func LogoutHandler() gin.HandlerFunc {
 	return func(context *gin.Context) {
-		tokenId := context.GetHeader(AUTH_HEADER)
+		tokenId := context.GetHeader(AuthHeader)
 		if tokenId == "" {
 			context.JSON(500, gin.H{
 				"result": "no need logout",
@@ -193,14 +194,6 @@ func LogoutHandler() gin.HandlerFunc {
 		token.DeleteToken()
 		context.JSON(200, gin.H{
 			"result": "logout successfully",
-		})
-	}
-}
-
-func AddInputHandler() gin.HandlerFunc {
-	return func(context *gin.Context) {
-		context.JSON(200, gin.H{
-			"result": "inputs successfully",
 		})
 	}
 }

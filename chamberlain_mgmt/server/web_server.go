@@ -5,6 +5,8 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+const AuthHeader string = "X-AUTH-TOKEN"
+
 func StartServer() {
 	log.Info("Begin to start web server...")
 	router := gin.Default()
@@ -16,7 +18,7 @@ func StartServer() {
 func apiRoute(router *gin.Engine) {
 	userIndex := router.Group("/users")
 	{
-		userIndex.POST("", AuthHandler(), AddUserHandler())
+		userIndex.POST("", AddUserHandler())
 		userIndex.PUT("", AuthHandler(), UpdateUserHandler())
 		userIndex.DELETE("", AuthHandler(), DeleteUserHandler())
 		userIndex.GET("", AuthHandler(), GetUsersHandler())
@@ -29,6 +31,12 @@ func apiRoute(router *gin.Engine) {
 	inputIndex := router.Group("/inputs")
 	{
 		inputIndex.POST("", AuthHandler(), AddInputHandler())
-		inputIndex.GET("", AuthHandler(), AddInputHandler())
+		inputIndex.PUT("", AuthHandler(), UpdateInputHandler())
+		inputIndex.DELETE("", AuthHandler(), DeleteInputHandler())
+		inputIndex.GET("", AuthHandler(), GetInputsHandler())
+		inputIndex.GET("/count", AuthHandler(), GetInputsCountHandler())
+		inputIndex.GET("/statistic", AuthHandler(), GetStatisticHandler())
+		inputIndex.GET("/statistic/month", AuthHandler(), GetStatisticByMonthHandler())
+		inputIndex.GET("/statistic/type", AuthHandler(), GetStatisticByTypeHandler())
 	}
 }
