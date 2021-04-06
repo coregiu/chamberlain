@@ -32,8 +32,8 @@ func init() {
 		panic(err)
 		return
 	}
-	debug = log.New(io.MultiWriter(logFile), "Info:", log.Ldate|log.Ltime)
-	info = log.New(io.MultiWriter(logFile), "Info:", log.Ldate|log.Ltime)
+	debug = log.New(io.MultiWriter(os.Stdout, logFile), "Info:", log.Ldate|log.Ltime)
+	info = log.New(io.MultiWriter(os.Stderr, logFile), "Info:", log.Ldate|log.Ltime)
 	warning = log.New(io.MultiWriter(os.Stdout, logFile), "Warning:", log.Ldate|log.Ltime)
 	errors = log.New(io.MultiWriter(os.Stderr, logFile), "Error:", log.Ldate|log.Ltime)
 }

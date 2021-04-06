@@ -69,13 +69,13 @@ func GetDbConnection() *gorm.DB {
 
 func initConfig() *ChamberlainConfig {
 	logConfig := new(LogConfig)
-	logConfig.Path = "/var/log/chamberlain.log"
+	logConfig.Path = "/var/chamberlain.log"
 	logConfig.LogLevel = 1
 
 	databaseConfig := new(DatabaseConfig)
 	databaseConfig.Database = "chamberlain"
-	databaseConfig.Host = "localhost"
-	databaseConfig.Password = "123456"
+	databaseConfig.Host = "database"
+	databaseConfig.Password = "199527"
 	databaseConfig.Port = 3306
 	databaseConfig.Username = "root"
 

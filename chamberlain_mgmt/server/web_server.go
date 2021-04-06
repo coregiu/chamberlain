@@ -9,6 +9,7 @@ const AuthHeader string = "X-AUTH-TOKEN"
 
 func StartServer() {
 	log.Info("Begin to start web server...")
+	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 	apiRoute(router)
 	router.Run()
