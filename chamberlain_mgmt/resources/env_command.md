@@ -6,6 +6,10 @@ go build
 sudo GOOS=linux CGO_ENABLED=0 /usr/local/go/bin/go build -o apps -ldflags "-s -w" -i chamberlain_mgmt
 upx -o app apps
 docker build -t chamberlain:1.0 .
+
+# delete temporary images.
+docker rmi $(docker images -q -f dangling=true)   
+
 docker run -d --name chamberlain -p 8080:8080 --link database:database  -v /var:/var chamberlain:1.0
 docker run -it --rm --name chamberlaintest -p 8080:8080 --link database:database  -v /var:/var chamberlain:1.1
 
