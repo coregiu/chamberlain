@@ -9,6 +9,7 @@ docker build -t chamberlain:1.0 .
 
 # delete temporary images.
 docker rmi $(docker images -q -f dangling=true)   
+docker image prune
 
 docker run -d --name chamberlain -p 8080:8080 --link database:database  -v /var:/var chamberlain:1.0
 docker run -it --rm --name chamberlaintest -p 8080:8080 --link database:database  -v /var:/var chamberlain:1.1

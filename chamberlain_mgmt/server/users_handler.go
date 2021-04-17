@@ -12,13 +12,7 @@ func AuthHandler() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		log.Info("begin to check auth")
 		tokenId := context.GetHeader(AuthHeader)
-		if tokenId == "" {
-			context.JSON(400, gin.H{
-				"result": "no authorization for no auth token",
-			})
-			context.Abort()
-			return
-		}
+
 		token := auth.Token{}
 		token.TokenId = tokenId
 		log.Info("request url = %s", context.Request.RequestURI)
@@ -28,9 +22,7 @@ func AuthHandler() gin.HandlerFunc {
 			url = url[0:indexOfParam]
 		}
 		log.Info("url = %s", url)
-		arr := strings.Split(url, "/")
-		log.Info("operation = %s", arr[1])
-		isAuthed, err := token.CheckAuth(arr[1])
+		isAuthed, err := token.CheckAuth(url)
 		if err != nil || !isAuthed {
 			context.JSON(400, gin.H{
 				"result": "no authorization for expired token or has no permission",
@@ -43,37 +35,36 @@ func AuthHandler() gin.HandlerFunc {
 	}
 }
 
-func GetUserHandler() gin.HandlerFunc {
-	return func(context *gin.Context) {
-		log.Info("get user information by username")
-		username := context.Param("username")
-		log.Info("username = " + username)
-		user := new(auth.User)
-		user.Username = username
-		err := user.GetUser()
-		if err != nil {
-			log.Error("Failed to get the user %s", username)
-			context.String(500, err.Error())
-		} else {
-			context.JSON(200, user)
-		}
-		context.Done()
-	}
-}
-
 func GetUsersHandler() gin.HandlerFunc {
 	return func(context *gin.Context) {
-		limit, _ := context.GetQuery("limit")
-		offset, _ := context.GetQuery("offset")
-		limitInt, _ := strconv.Atoi(limit)
-		offsetInt, _ := strconv.Atoi(offset)
-
-		user := new(auth.User)
-		users, err := user.GetUsers(offsetInt, limitInt)
-		if err != nil {
-			context.String(500, err.Error())
+		log.Info("get user information")
+		username, _ := context.GetQuery("username")
+		if username != "" {
+			log.Info("username = " + username)
+			user := new(auth.User)
+			user.Username = username
+			err := user.GetUser()
+			if err != nil {
+				log.Error("Failed to get the user %s", username)
+				context.String(500, err.Error())
+			} else {
+				context.JSON(200, user)
+			}
+			context.Done()
 		} else {
-			context.JSON(200, users)
+
+			limit, _ := context.GetQuery("limit")
+			offset, _ := context.GetQuery("offset")
+			limitInt, _ := strconv.Atoi(limit)
+			offsetInt, _ := strconv.Atoi(offset)
+
+			user := new(auth.User)
+			users, err := user.GetUsers(offsetInt, limitInt)
+			if err != nil {
+				context.String(500, err.Error())
+			} else {
+				context.JSON(200, users)
+			}
 		}
 	}
 }

@@ -25,8 +25,16 @@ type Token struct {
 }
 
 func init() {
-	authMap["users"] = "all"
-	authMap["inputs"] = "admin"
+	authMap["/rest/users"] = "admin"
+	authMap["/rest/users/count"] = "all"
+	authMap["/rest/users/login"] = "none"
+	authMap["/rest/users/logout"] = "all"
+
+	authMap["/rest/inputs"] = "admin"
+	authMap["/rest/inputs/count"] = "admin"
+	authMap["/rest/inputs/statistic"] = "admin"
+	authMap["/rest/inputs/statistic/month"] = "admin"
+	authMap["/rest/inputs/statistic/type"] = "admin"
 
 	timer := time.NewTimer(time.Hour)
 	go func() {
@@ -51,6 +59,20 @@ func (token *Token) CheckAuth(operation string) (bool, error) {
 		log.Error("operation is nil")
 		return false, errors.New("username is nil")
 	}
+	role := authMap[operation]
+	if role == "" {
+		log.Error("operation is has no operation right")
+		return false, errors.New("operation is has no operation right")
+	}
+	log.Info("role = %s", role)
+	if strings.Compare(role, "none") == 0 {
+		return true, nil
+	}
+
+	if token.TokenId == "" {
+		log.Error("token id is empty")
+		return false, errors.New("no authorization for no auth token")
+	}
 
 	rwLock.RLock()
 	checkedToken, isExists := tokenMap[token.TokenId]
@@ -63,24 +85,19 @@ func (token *Token) CheckAuth(operation string) (bool, error) {
 			return false, errors.New("token has been expired")
 		}
 
-		return checkOperationAuth(operation, checkedToken)
+		return checkOperationAuth(role, checkedToken)
 	} else {
 		return false, errors.New("token is invalid or expired")
 	}
 }
 
-func checkOperationAuth(operation string, checkedToken Token) (bool, error) {
-	operationRole, operationExists := authMap[operation]
-	if operationExists {
-		if strings.Compare(operationRole, "all") == 0 || strings.Compare(operationRole, checkedToken.User.Role) == 0 {
-			return true, nil
-		} else {
-			log.Error("current user don't have operation right")
-			return false, errors.New("current user don't have operation right")
-		}
+func checkOperationAuth(role string, checkedToken Token) (bool, error) {
+	// none role was checked before
+	if strings.Compare(role, "all") == 0 || strings.Compare(role, checkedToken.User.Role) == 0 {
+		return true, nil
 	} else {
-		log.Error("current operation don't have role right")
-		return false, errors.New("current operation don't have role right")
+		log.Error("current user don't have operation right")
+		return false, errors.New("current user don't have operation right")
 	}
 }
 
