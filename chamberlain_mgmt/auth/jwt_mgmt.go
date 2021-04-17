@@ -64,7 +64,7 @@ func (token *Token) CheckAuth(operation string) (bool, error) {
 		log.Error("operation is has no operation right")
 		return false, errors.New("operation is has no operation right")
 	}
-	log.Info("role = %s", role)
+	log.Info("required role = %s", role)
 	if strings.Compare(role, "none") == 0 {
 		return true, nil
 	}
