@@ -5,13 +5,12 @@ import Input from "../views/input.vue"
 import Login from "../views/login.vue"
 import System from "../views/system.vue"
 import User from "../views/user.vue"
-import Home from "../views/home.vue"
 
 const routes: Array<any> = [
     {
         path: "/",
         name: "Home",
-        component: Home,
+        component: Blog,
     },{
         path: "/blog",
         name: "Blog",

@@ -4,12 +4,6 @@
   box-sizing: border-box;
 }
 
-
-ol,
-ul {
-  list-style: none;
-}
-
 body {
   margin: 0;
   color: #343d4a;
@@ -28,60 +22,97 @@ body {
     position: relative;
     min-height: 100vh;
     display: flex;
-    // color: #2c3e50;
 
-    #nav {
+    #top {
       position: fixed;
-      width: 200px;
+      height: 8vh;
+      width: 100%;
       top: 0;
-      left: 0;
-      bottom: 0;
+      text-align: right;
       background-color: #ffffff;
-      padding: 24px;
-      flex: 0 0 auto;
-      height: 100vh;
-      z-index: 99;
+      flex: 10 10 auto;
+      color: #3a0d14;
 
-      > div {
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: flex-start;
-        color: #92abcf;
-        padding: 10px 0;
+      div {
+        position: relative;
+        display: inline-block;
+        color: #3a0d14;
+        padding: 3vh 3vh;
+        right: 5%;
+        height: 10vh;
+        font-weight: bold;
+        &:hover {
+          color: #f15725;
+          ul {
+            display: block;
+          }
+        }
 
-        ul{
-          li{
-            text-align: left;
+        img {
+          position: relative;
+          height: 2vh;
+          padding-right: 0.3vh;
+          top: 0.35vh;
+        }
+
+        ul {
+          display: none;
+          position: absolute;
+          list-style-type: none;
+          margin: 0;
+          padding: 0;
+          background-color: #f9f9f9;
+          width: 70%;
+          text-align: center;
+          router-link {
+            color: #8c818a;
           }
         }
       }
+    }
 
-      a {
-        width: 100%;
-        font-weight: bold;
-        color: #92abcf;
-        text-decoration: none;
-        cursor: pointer;
-        text-align: left;
+    router-link {
+      width: 100%;
+      font-weight: bold;
+      color: #3a0d14;
+      text-decoration: none;
+      cursor: pointer;
+      text-align: left;
 
-        &:hover {
-          color: #11ece5;
-        }
+      &:hover {
+        color: #f15725;
+      }
 
-        &.router-link-exact-active {
-          color: #11ece5;
-        }
+      &.router-link-exact-active {
+        color: #f15725;
       }
     }
 
     #content {
       position: relative;
-      min-height: 100vh;
+      min-height: 80vh;
       width: 100%;
-      padding-left: 230px;
-      padding-right: 80px
+    }
+
+    #foot {
+      position: fixed;
+      height: 5vh;
+      width: 100%;
+      bottom: 0;
+      left: 0;
+      background-color: #ffffff;
+      display: inline-block;
+      text-align: center;
+      vertical-align: center;
+      line-height: 5vh;
+    }
+
+    #logo {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 8vh;
+      width: 27vh;
     }
   }
 }
-
