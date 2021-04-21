@@ -17,29 +17,25 @@ func StartServer() {
 }
 
 func apiRoute(router *gin.Engine) {
-	restGroup := router.Group("/rest", AuthHandler())
+	userIndex := router.Group("/users", AuthHandler())
 	{
-		userIndex := restGroup.Group("/users")
-		{
-			userIndex.POST("", AddUserHandler())
-			userIndex.PUT("", UpdateUserHandler())
-			userIndex.DELETE("", DeleteUserHandler())
-			userIndex.GET("", GetUsersHandler())
-			userIndex.GET("/count", GetUsersCountHandler())
-			userIndex.POST("/login", LoginHandler())
-			userIndex.POST("/logout", LogoutHandler())
-		}
-
-		inputIndex := restGroup.Group("/inputs")
-		{
-			inputIndex.POST("", AddInputHandler())
-			inputIndex.PUT("", UpdateInputHandler())
-			inputIndex.DELETE("", DeleteInputHandler())
-			inputIndex.GET("", GetInputsHandler())
-			inputIndex.GET("/count", GetInputsCountHandler())
-			inputIndex.GET("/statistic", GetStatisticHandler())
-			inputIndex.GET("/statistic/month", GetStatisticByMonthHandler())
-			inputIndex.GET("/statistic/type", GetStatisticByTypeHandler())
-		}
+		userIndex.POST("", AddUserHandler())
+		userIndex.PUT("", UpdateUserHandler())
+		userIndex.DELETE("", DeleteUserHandler())
+		userIndex.GET("", GetUsersHandler())
+		userIndex.GET("/count", GetUsersCountHandler())
+		userIndex.POST("/login", LoginHandler())
+		userIndex.POST("/logout", LogoutHandler())
+	}
+	inputIndex := router.Group("/inputs", AuthHandler())
+	{
+		inputIndex.POST("", AddInputHandler())
+		inputIndex.PUT("", UpdateInputHandler())
+		inputIndex.DELETE("", DeleteInputHandler())
+		inputIndex.GET("", GetInputsHandler())
+		inputIndex.GET("/count", GetInputsCountHandler())
+		inputIndex.GET("/statistic", GetStatisticHandler())
+		inputIndex.GET("/statistic/month", GetStatisticByMonthHandler())
+		inputIndex.GET("/statistic/type", GetStatisticByTypeHandler())
 	}
 }

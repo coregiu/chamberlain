@@ -25,16 +25,16 @@ type Token struct {
 }
 
 func init() {
-	authMap["/rest/users"] = "admin"
-	authMap["/rest/users/count"] = "all"
-	authMap["/rest/users/login"] = "none"
-	authMap["/rest/users/logout"] = "all"
+	authMap["/users"] = "admin"
+	authMap["/users/count"] = "all"
+	authMap["/users/login"] = "none"
+	authMap["/users/logout"] = "all"
 
-	authMap["/rest/inputs"] = "admin"
-	authMap["/rest/inputs/count"] = "admin"
-	authMap["/rest/inputs/statistic"] = "admin"
-	authMap["/rest/inputs/statistic/month"] = "admin"
-	authMap["/rest/inputs/statistic/type"] = "admin"
+	authMap["/inputs"] = "admin"
+	authMap["/inputs/count"] = "admin"
+	authMap["/inputs/statistic"] = "admin"
+	authMap["/inputs/statistic/month"] = "admin"
+	authMap["/inputs/statistic/type"] = "admin"
 
 	timer := time.NewTimer(time.Hour)
 	go func() {
