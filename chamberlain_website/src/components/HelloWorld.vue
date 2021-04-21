@@ -1,5 +1,5 @@
 <template>
-    <img alt="Vue logo" src="../assets/giu-logo.png"/>
+    <img alt="Vue logo" src="../assets/regiu-logo.png"/>
     <h1>{{ msg }}</h1>
 </template>
 
