@@ -1,4 +1,4 @@
-import VueRouter  from 'vue-router'
+import {createRouter, createWebHashHistory} from 'vue-router'
 import Blog from "../views/blog.vue"
 import Dashboard from "../views/dashboard.vue"
 import Input from "../views/input.vue"
@@ -43,9 +43,8 @@ const routes: Array<any> = [
     }
 ]
 
-const router = new VueRouter({
-    mode: 'history',
-    base: process.env.BASE_URL,
+const router = createRouter({
+    history: createWebHashHistory(),
     routes,
 });
 
