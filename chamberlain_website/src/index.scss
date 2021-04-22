@@ -32,6 +32,7 @@ body {
       background-color: #ffffff;
       flex: 10 10 auto;
       color: #3a0d14;
+      z-index: 999;
 
       div {
         position: relative;
@@ -64,14 +65,11 @@ body {
           background-color: #f9f9f9;
           width: 70%;
           text-align: center;
-          router-link {
-            color: #8c818a;
-          }
         }
       }
     }
 
-    router-link {
+    .menu {
       width: 100%;
       font-weight: bold;
       color: #3a0d14;
@@ -88,10 +86,17 @@ body {
       }
     }
 
+    .subMenu {
+      color: #8c818a;
+    }
+
     #content {
-      position: relative;
-      min-height: 80vh;
+      position: fixed;
+      top: 9.5vh;
+      height: 84vh;
       width: 100%;
+      background-color: #f9f9f9;
+
     }
 
     #foot {
