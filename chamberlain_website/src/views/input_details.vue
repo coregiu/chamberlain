@@ -4,7 +4,7 @@
 
 <script>
 export default {
-name: "input"
+name: "input_details"
 }
 </script>
 

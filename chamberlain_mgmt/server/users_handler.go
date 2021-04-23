@@ -24,7 +24,7 @@ func AuthHandler() gin.HandlerFunc {
 		log.Info("url = %s", url)
 		isAuthed, err := token.CheckAuth(url)
 		if err != nil || !isAuthed {
-			context.JSON(400, gin.H{
+			context.JSON(401, gin.H{
 				"result": "no authorization for expired token or has no permission",
 			})
 			context.Abort()
@@ -40,7 +40,7 @@ func GetUsersHandler() gin.HandlerFunc {
 		log.Info("get user information")
 		username, _ := context.GetQuery("username")
 		if username != "" {
-			log.Info("username = " + username)
+			log.Info("username = %s", username)
 			user := new(auth.User)
 			user.Username = username
 			err := user.GetUser()
@@ -90,7 +90,7 @@ func AddUserHandler() gin.HandlerFunc {
 			context.String(500, err.Error())
 			return
 		}
-		log.Info("username = " + user.Username)
+		log.Info("username = %s", user.Username)
 		user.Role = "user"
 		err = user.Adduser()
 		if err != nil {

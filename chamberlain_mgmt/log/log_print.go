@@ -38,25 +38,25 @@ func init() {
 	errors = log.New(io.MultiWriter(os.Stderr, logFile), "Error:", log.Ldate|log.Ltime)
 }
 
-func Debug(printFormat string, printParams ...string) {
+func Debug(printFormat string, printParams ...interface{}) {
 	if logLevel <= DebugLevel {
 		debug.Printf(printFormat+printCallerName(), printParams)
 	}
 }
 
-func Info(printFormat string, printParams ...string) {
+func Info(printFormat string, printParams ...interface{}) {
 	if logLevel <= InfoLevel {
 		info.Printf(printCallerName()+printFormat, printParams)
 	}
 }
 
-func Warn(printFormat string, printParams ...string) {
+func Warn(printFormat string, printParams ...interface{}) {
 	if logLevel <= WarnLevel {
 		warning.Printf(printCallerName()+printFormat, printParams)
 	}
 }
 
-func Error(printFormat string, printParams ...string) {
+func Error(printFormat string, printParams ...interface{}) {
 	if logLevel <= ErrorLevel {
 		errors.Printf(printCallerName()+printFormat, printParams)
 	}

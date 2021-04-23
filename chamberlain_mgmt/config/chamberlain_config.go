@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"log"
 	"time"
+	"log"
 )
 
 /*System configuration*/
@@ -44,13 +44,13 @@ func initDbConnection(dbConfig *DatabaseConfig) {
 	var err error
 	db, err = gorm.Open(mysql.Open(dbUrl), &gorm.Config{})
 	if err != nil {
-		log.Println("Failed to create database connection!")
+		log.Printf("Failed to create database connection!")
 	} else {
-		log.Println("Get db connection successfully!" + fmt.Sprintf("%v", db.Config.AllowGlobalUpdate))
+		log.Printf("Get db connection successfully!" + fmt.Sprintf("%v", db.Config.AllowGlobalUpdate))
 	}
 	sqlDb, err := db.DB()
 	if err != nil {
-		log.Println("Failed to create database connection!")
+		log.Printf("Failed to create database connection!")
 		return
 	}
 	// SetMaxIdleConns 设置空闲连接池中连接的最大数量
@@ -70,6 +70,7 @@ func GetDbConnection() *gorm.DB {
 func initConfig() *ChamberlainConfig {
 	logConfig := new(LogConfig)
 	logConfig.Path = "/var/chamberlain.log"
+	//Default is Info level = 1
 	logConfig.LogLevel = 1
 
 	databaseConfig := new(DatabaseConfig)

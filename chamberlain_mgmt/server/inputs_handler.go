@@ -77,7 +77,7 @@ func GetInputsHandler() gin.HandlerFunc {
 		offset := getIntParam(context, "offset", 0)
 		year := getUInt16Param(context, "year", 0)
 		month := getUInt8Param(context, "month", 0)
-		log.Info("limit = %s, offset = %s, year = %s, month = %s", fmt.Sprint(limit), fmt.Sprint(offset), fmt.Sprint(year), fmt.Sprint(month))
+		log.Info("limit = %d, offset = %d, year = %d, month = %d", limit, offset, year, month)
 
 		input := new(io.Input)
 		inputs, err := input.GetInputs(year, month, limit, offset)
@@ -93,7 +93,7 @@ func GetInputsCountHandler() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		year := getUInt16Param(context, "year", 0)
 		month := getUInt8Param(context, "month", 0)
-		log.Info("year = %s, month = %s", fmt.Sprint(year), fmt.Sprint(month))
+		log.Info("year = %d, month = %d", year, month)
 
 		input := new(io.Input)
 		inputsCount, err := input.GetInputsCount(year, month)

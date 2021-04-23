@@ -4,7 +4,7 @@
 
 <script>
 export default {
-name: "user"
+name: "sys_back"
 }
 </script>
 
