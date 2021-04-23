@@ -15,6 +15,7 @@ docker run -d --name chamberlain -p 8080:8080 --link database:database  -v /var:
 docker run -it --rm --name chamberlaintest -p 8080:8080 --link database:database  -v /var:/var chamberlain:1.1
 
 [podman]
-pd pod create -n giu -p 8080:8080
+pd pod create -n giu -p 8080:8080 -p 80:80
 pd run -d --name database --pod giu -v /root/workspace/database:/var/lib/mysql -v /root/workspace/database:/etc/mysql/conf.d -e MYSQL_ROOT_PASSWORD=199527 docker.io/library/mysql:latest
 pd run -d --name chamberlain -v /var:/var --pod giu localhost/chamberlain:1.0
+pd run -d --name regiu --pod giu localhost/regiu:1.0
