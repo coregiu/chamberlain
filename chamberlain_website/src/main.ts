@@ -10,7 +10,7 @@ import 'primevue/resources/themes/saga-blue/theme.css'
 import 'primevue/resources/primevue.min.css'
 // @ts-ignore
 import ToastService from 'primevue/toastservice'
-import {ajax} from './api/axios'
+import {ajax} from './api/ajax'
 import Checkbox from "primevue/checkbox";
 import Chart from 'primevue/chart';
 import InputText from 'primevue/inputtext';
@@ -29,6 +29,7 @@ import Panel from "primevue/panel";
 import DataView from "primevue/dataview";
 import Avatar from "primevue/avatar";
 import AutoComplete from "primevue/autocomplete";
+import Tree from "primevue/tree";
 
 const app = createApp(App);
 app.use(router);
@@ -53,6 +54,7 @@ app.component("Panel", Panel);
 app.component("DataView", DataView);
 app.component("Avatar", Avatar);
 app.component("AutoComplete", AutoComplete);
+app.component("Tree", Tree);
 
 app.config.globalProperties.$axios = ajax;
 app.config.globalProperties.$token = token;

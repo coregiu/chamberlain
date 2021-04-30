@@ -1,4 +1,4 @@
-import {ajax} from "./axios";
+import {ajax} from "./ajax";
 
 const headers = {"Content-Type" : "application/json;charset=UTF-8"};
 
