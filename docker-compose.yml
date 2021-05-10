@@ -1,0 +1,36 @@
+version: '3.2'
+services:
+  regiu:
+    image: "regiu:1.3"
+    ports:
+      - "80:80"
+    volumes:
+      - /giu/chamberlain/books:/usr/share/nginx/html/books
+    networks:
+      - regiu-network
+    depends_on:
+      - chamberlain
+  chamberlain:
+    image: "chamberlain:1.0"
+    ports:
+      - "8080:8080"
+    volumes:
+      - /var:/var
+    networks:
+      - regiu-network
+    depends_on:
+      - database
+  database:
+    image: "mysql:latest"
+    ports:
+      - "3306:3306"
+    volumes:
+      - /giu/chamberlain/database:/var/lib/mysql 
+      - /giu/chamberlain/database:/etc/mysql/conf.d
+    environment:
+      MYSQL_ROOT_PASSWORD: "199527"
+    networks:
+      - regiu-network
+networks:
+  regiu-network:
+    driver: overlay
