@@ -35,6 +35,7 @@ func init() {
 	authMap["/inputs/statistic"] = "admin"
 	authMap["/inputs/statistic/month"] = "admin"
 	authMap["/inputs/statistic/type"] = "admin"
+	authMap["/blogs"] = "admin"
 
 	timer := time.NewTimer(time.Hour)
 	go func() {

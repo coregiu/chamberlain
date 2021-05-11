@@ -40,6 +40,9 @@
           <li>
             <router-link to="/sys_back" class="subMenu">备份恢复</router-link>
           </li>
+          <li>
+            <router-link to="/refresh_blogs" class="subMenu">更新博客</router-link>
+          </li>
         </ul>
       </div>
       <div>

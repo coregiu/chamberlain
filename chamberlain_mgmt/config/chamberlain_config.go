@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"time"
 	"log"
+	"time"
 )
 
 /*System configuration*/
@@ -17,10 +17,12 @@ var db *gorm.DB
 type ChamberlainConfig struct {
 	LogConfig      *LogConfig
 	DatabaseConfig *DatabaseConfig
+	BlogWorkPath   string
+	BlogRepos      *[]*BlogRepository
 }
 
 type LogConfig struct {
-	Path string
+	Path     string
 	LogLevel int8
 }
 
@@ -32,13 +34,19 @@ type DatabaseConfig struct {
 	Password string
 }
 
-func init() {
-	initConfig()
-	dbConfig := config.DatabaseConfig
-	initDbConnection(dbConfig)
+type BlogRepository struct {
+	RepoPath string
+	RepoName string
 }
 
-func initDbConnection(dbConfig *DatabaseConfig) {
+func init() {
+	initLogAndDbConfig()
+	initBlogsConfig()
+	dbConfig := config.DatabaseConfig
+	initDbSource(dbConfig)
+}
+
+func initDbSource(dbConfig *DatabaseConfig) {
 	dbUrl := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		dbConfig.Username, dbConfig.Password, dbConfig.Host, dbConfig.Port, dbConfig.Database)
 	var err error
@@ -67,7 +75,7 @@ func GetDbConnection() *gorm.DB {
 	return db
 }
 
-func initConfig() *ChamberlainConfig {
+func initLogAndDbConfig() {
 	logConfig := new(LogConfig)
 	logConfig.Path = "/var/chamberlain.log"
 	//Default is Info level = 1
@@ -83,10 +91,28 @@ func initConfig() *ChamberlainConfig {
 	config = new(ChamberlainConfig)
 	config.LogConfig = logConfig
 	config.DatabaseConfig = databaseConfig
-
-	return config
 }
 
 func GetSystemConfig() *ChamberlainConfig {
 	return config
+}
+
+func initBlogsConfig() {
+	config.BlogWorkPath = "/giu/chamberlain/books"
+	repos := make([]*BlogRepository, 2)
+	philosophyRepo := new(BlogRepository)
+	philosophyRepo.RepoName = "Philosophy"
+	philosophyRepo.RepoPath = "git@gitee.com:regiu/philosophy.git"
+
+	technologyRepo := new(BlogRepository)
+	technologyRepo.RepoName = "Technology"
+	technologyRepo.RepoPath = "git@gitee.com:regiu/summary.git"
+
+	repos[0] = philosophyRepo
+	repos[1] = technologyRepo
+	config.BlogRepos = &repos
+}
+
+func GetBlogsConfig() (BlogWorkPath string, BlogRepos *[]*BlogRepository) {
+	return config.BlogWorkPath, config.BlogRepos
 }

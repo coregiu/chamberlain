@@ -11,6 +11,7 @@ import SysBack from "../views/sys_back.vue"
 import SysLog from "../views/sys_log.vue"
 import UserInfo from "../views/user_info.vue"
 import UpdatePassword from "../views/update_password.vue"
+import RefreshBlogs from "../views/refresh_blogs.vue"
 
 const routes: Array<any> = [
     {
@@ -76,6 +77,11 @@ const routes: Array<any> = [
         path: "/logout",
         name: "Logout",
         component: Logout,
+    },
+    {
+        path: "/refresh_blogs",
+        name: "RefreshBlogs",
+        component: RefreshBlogs,
     }
 ]
 

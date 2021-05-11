@@ -66,6 +66,7 @@ export default {
   text-align: left;
   padding-left: 5px;
   padding-top:10px;
+  overflow: scroll;
 }
 
 #iframeContent {

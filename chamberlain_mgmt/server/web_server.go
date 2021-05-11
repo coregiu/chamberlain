@@ -38,4 +38,8 @@ func apiRoute(router *gin.Engine) {
 		inputIndex.GET("/statistic/month", GetStatisticByMonthHandler())
 		inputIndex.GET("/statistic/type", GetStatisticByTypeHandler())
 	}
+	blogsIndex := router.Group("/blogs", AuthHandler())
+	{
+		blogsIndex.POST("", BlogsHandler())
+	}
 }
