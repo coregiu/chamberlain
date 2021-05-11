@@ -16,4 +16,7 @@ require (
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gorm.io/driver/mysql v1.0.5
 	gorm.io/gorm v1.21.3
+	github.com/russross/blackfriday/v2 v2.1.0
 )
+
+replace github.com/russross/blackfriday/v2 v2.1.0 => gopkg.in/russross/blackfriday.v2 v2.1.0
