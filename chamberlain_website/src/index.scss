@@ -53,8 +53,10 @@ body {
         height: 10vh;
         font-weight: bold;
         font-size: 13px;
+
         &:hover {
           color: #f15725;
+
           ul {
             display: block;
           }
@@ -75,10 +77,12 @@ body {
           background-color: #f9f9f9;
           width: 70%;
           text-align: center;
+
           li {
             height: 25px;
             padding-top: 5px;
-            &:hover{
+
+            &:hover {
               background-color: #e6e5e8;
             }
           }
@@ -105,7 +109,7 @@ body {
 
     .subMenu {
       color: #8c818a;
-      text-decoration:none;
+      text-decoration: none;
     }
 
     #content {
@@ -135,7 +139,7 @@ body {
       top: 0;
       left: 0;
       height: 6vh;
-      width: 23vh;
+      width: 25vh;
       z-index: 999;
     }
   }

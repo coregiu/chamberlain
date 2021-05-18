@@ -17,9 +17,10 @@ services:
     volumes:
       - /var:/var
       - /usr/bin/git:/usr/bin/git
-      - /usr/bin/ssh:/usr/bin/ssh
-      - ~/.ssh:/root/.ssh
       - ~/.gitconfig:/root/.gitconfig
+      - ~/.git-credentials:/root/.git-credentials
+      - /usr/lib/git-core:/usr/lib/git-core
+      - /usr/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu
       - /usr/share/git-core/templates:/usr/share/git-core/templates
       - /giu/chamberlain/books:/giu/chamberlain/books
     networks:

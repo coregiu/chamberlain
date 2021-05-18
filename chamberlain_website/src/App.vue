@@ -1,6 +1,6 @@
 <template>
   <div class="view">
-    <a href="#"><img src="./assets/regiu-logo.png" id="logo"/></a>
+    <a href="#"><img src="./assets/coregiu-logo.png" id="logo"/></a>
     <div id="unLoginTop" class="top">
       <div>
         <router-link to="/blog" class="menu"><img src="./assets/svgs/blog.svg"/>博客</router-link>
@@ -64,7 +64,7 @@
     <div id="content">
       <router-view/>
     </div>
-    <div id="foot">©2021 REGIU | <a href="https://gitee.com/regiu" target="_blank">https://gitee.com/regiu</a> |
+    <div id="foot">©2021 COREGIU | <a href="https://github.com/coregiu" target="_blank">https://github.com/coregiu</a> |
       火在水上未济，君子以慎辨物居方。
     </div>
   </div>
