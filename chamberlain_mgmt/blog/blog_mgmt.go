@@ -38,7 +38,7 @@ var waitGroup = &sync.WaitGroup{}
 
 func (blogs *Blogs) CleanWorkSpace() error {
 	commandStr := "cd " + blogs.WorkPath + " && rm -rf *"
-	cmd := exec.Command("/bin/bash", "-c", commandStr)
+	cmd := exec.Command("/bin/sh", "-c", commandStr)
 	return cmd.Run()
 }
 
@@ -79,7 +79,7 @@ func (blogs *Blogs) CloneBlogsRepos() {
 		log.Info("begin to clone the repo %s, %s", repo.RepoPath, repo.RepoName)
 		cmdStr := "cd " + blogs.WorkPath + " && git clone " + repo.RepoPath + " " + repo.RepoName
 
-		cmd := exec.Command("/bin/bash", "-c", cmdStr)
+		cmd := exec.Command("/bin/sh", "-c", cmdStr)
 		err := cmd.Run()
 		if err != nil {
 			log.Error("Failed to clone the repo %s", err.Error())

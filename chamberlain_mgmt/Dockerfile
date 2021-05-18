@@ -8,7 +8,8 @@ RUN go mod download &&\
     link ./resources/upx /usr/local/bin/upx &&\
     upx -o chamberlain chamberlain_mgmt
 
-FROM scratch as runner
+#FROM scratch as runner
+FROM busybox:latest as runner
 COPY --from=builder /opt/chamberlain/chamberlain /
 EXPOSE 8080
 CMD ["/chamberlain"]
