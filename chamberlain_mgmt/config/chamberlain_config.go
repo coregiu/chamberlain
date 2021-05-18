@@ -102,11 +102,11 @@ func initBlogsConfig() {
 	repos := make([]*BlogRepository, 2)
 	philosophyRepo := new(BlogRepository)
 	philosophyRepo.RepoName = "Philosophy"
-	philosophyRepo.RepoPath = "git@gitee.com:regiu/philosophy.git"
+	philosophyRepo.RepoPath = "https://github.com/coregiu/philosophy.git"
 
 	technologyRepo := new(BlogRepository)
 	technologyRepo.RepoName = "Technology"
-	technologyRepo.RepoPath = "git@gitee.com:regiu/summary.git"
+	technologyRepo.RepoPath = "https://github.com/coregiu/summary.git"
 
 	repos[0] = philosophyRepo
 	repos[1] = technologyRepo
