@@ -9,12 +9,7 @@ import (
 	"strconv"
 )
 
-const DebugLevel = 0
-const InfoLevel = 1
-const WarnLevel = 2
-const ErrorLevel = 3
-
-var logLevel int8
+var logLevel int
 
 var (
 	debug   *log.Logger
@@ -32,6 +27,7 @@ func init() {
 		panic(err)
 		return
 	}
+	defer logFile.Close()
 	debug = log.New(io.MultiWriter(os.Stdout, logFile), "Info:", log.Ldate|log.Ltime)
 	info = log.New(io.MultiWriter(os.Stderr, logFile), "Info:", log.Ldate|log.Ltime)
 	warning = log.New(io.MultiWriter(os.Stdout, logFile), "Warning:", log.Ldate|log.Ltime)
@@ -39,25 +35,25 @@ func init() {
 }
 
 func Debug(printFormat string, printParams ...interface{}) {
-	if logLevel <= DebugLevel {
+	if logLevel <= config.DebugLevel {
 		debug.Printf(printFormat+printCallerName(), printParams)
 	}
 }
 
 func Info(printFormat string, printParams ...interface{}) {
-	if logLevel <= InfoLevel {
+	if logLevel <= config.InfoLevel {
 		info.Printf(printCallerName()+printFormat, printParams)
 	}
 }
 
 func Warn(printFormat string, printParams ...interface{}) {
-	if logLevel <= WarnLevel {
+	if logLevel <= config.WarnLevel {
 		warning.Printf(printCallerName()+printFormat, printParams)
 	}
 }
 
 func Error(printFormat string, printParams ...interface{}) {
-	if logLevel <= ErrorLevel {
+	if logLevel <= config.ErrorLevel {
 		errors.Printf(printCallerName()+printFormat, printParams)
 	}
 }

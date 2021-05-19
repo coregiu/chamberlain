@@ -1,6 +1,7 @@
 package blog
 
 import (
+	"chamberlain_mgmt/config"
 	"fmt"
 	"testing"
 )
@@ -8,13 +9,13 @@ import (
 func TestBlogs_Should_generate_books_When_invoke_blog_handler(t *testing.T) {
 	blogs := new(Blogs)
 	blogs.WorkPath = "/giu/chamberlain/books"
-	repos := make([]*Repository, 2)
+	repos := make([]*config.BlogRepository, 2)
 	blogs.BlogRepos = &repos
-	repoA := new(Repository)
+	repoA := new(config.BlogRepository)
 	repoA.RepoName = "Philosophy"
 	repoA.RepoPath = "git@gitee.com:regiu/philosophy.git"
 
-	repoB := new(Repository)
+	repoB := new(config.BlogRepository)
 	repoB.RepoName = "Technology"
 	repoB.RepoPath = "git@gitee.com:regiu/summary.git"
 

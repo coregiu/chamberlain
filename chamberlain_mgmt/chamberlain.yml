@@ -1,0 +1,16 @@
+LogConfig:
+  Path: /var/chamberlain.log
+  # DEBUG: 0 , INFO: 1, WARN: 2, ERROR: 3
+  LogLevel: 1
+DatabaseConfig:
+  Host: database
+  Port: 3306
+  Database: chamberlain
+  Username: root
+  Password: 199527
+BlogWorkPath: /giu/chamberlain/books
+BlogRepositories:
+  - RepoPath: https://github.com/coregiu/philosophy.git
+    RepoName: Philosophy
+  - RepoPath: https://github.com/coregiu/summary.git
+    RepoName: Technology
