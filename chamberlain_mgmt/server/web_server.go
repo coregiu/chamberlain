@@ -24,6 +24,8 @@ func apiRoute(router *gin.Engine) {
 		userIndex.DELETE("", DeleteUserHandler())
 		userIndex.GET("", GetUsersHandler())
 		userIndex.GET("/count", GetUsersCountHandler())
+		userIndex.GET("/token", GetUserByTokenHandler())
+		userIndex.PUT("/password", RestPasswordHandler())
 		userIndex.POST("/login", LoginHandler())
 		userIndex.POST("/logout", LogoutHandler())
 	}

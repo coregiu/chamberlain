@@ -7,9 +7,10 @@ import (
 )
 
 type User struct {
-	Username string `form:"Username" json:"Username" binding:"required"`
-	Password string
-	Role     string
+	Username    string `form:"Username" json:"Username" binding:"required"`
+	Password    string
+	Role        string
+	NewPassword string
 }
 
 type UserMgmt interface {
@@ -20,6 +21,7 @@ type UserMgmt interface {
 	GetUsersCount() (int64, error)
 	GetUsers(offset int, limit int) ([]User, error)
 	CheckAuth() (bool, error)
+	ResetPassword() error
 }
 
 func (user *User) Adduser() error {
@@ -137,4 +139,19 @@ func (user *User) CheckAuth() (bool, error) {
 	}
 	log.Info("username %s's role is %s", user.Username, user.Role)
 	return true, nil
+}
+
+func (user *User) ResetPassword() error {
+	isPassRight, err := user.CheckAuth()
+	if !isPassRight || err != nil {
+		log.Warn("error password, not change password")
+		return err
+	}
+	user.Password = user.NewPassword
+	err = user.UpdateUser()
+	if err != nil {
+		log.Warn("failed to update password")
+		return err
+	}
+	return nil
 }

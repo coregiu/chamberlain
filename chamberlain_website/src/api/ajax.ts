@@ -12,7 +12,7 @@ const request = (url, method, headers, data) => {
             res => {
                 const data = res.data;
                 const status = res.status;
-                console.log(res)
+                // console.log(res)
                 if (status >= 200) {
                     resolve(data);
                 }

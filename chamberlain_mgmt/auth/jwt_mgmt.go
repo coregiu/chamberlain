@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-var tokenMap = map[string]Token{}
+var tokenMap = map[string]*Token{}
 var userTokenMap = map[string]string{}
 var authMap = map[string]string{}
 var rwLock = sync.RWMutex{}
@@ -27,6 +27,8 @@ type Token struct {
 func init() {
 	authMap["/users"] = "admin"
 	authMap["/users/count"] = "all"
+	authMap["/users/token"] = "all"
+	authMap["/users/password"] = "all"
 	authMap["/users/login"] = "none"
 	authMap["/users/logout"] = "all"
 
@@ -53,6 +55,7 @@ type TokenFunc interface {
 	CheckAuth(operation string) (bool, error)
 	CreateNewToken(user *User) error
 	DeleteToken()
+	GetToken() (*Token, error)
 }
 
 func (token *Token) CheckAuth(operation string) (bool, error) {
@@ -92,7 +95,7 @@ func (token *Token) CheckAuth(operation string) (bool, error) {
 	}
 }
 
-func checkOperationAuth(role string, checkedToken Token) (bool, error) {
+func checkOperationAuth(role string, checkedToken *Token) (bool, error) {
 	// none role was checked before
 	if strings.Compare(role, "all") == 0 || strings.Compare(role, checkedToken.User.Role) == 0 {
 		return true, nil
@@ -100,6 +103,20 @@ func checkOperationAuth(role string, checkedToken Token) (bool, error) {
 		log.Error("current user don't have operation right")
 		return false, errors.New("current user don't have operation right")
 	}
+}
+
+func (token *Token) GetToken() (*Token, error) {
+	if token.TokenId == "" {
+		log.Error("token id is nil")
+		return token, errors.New("token id is nil")
+	}
+	mapToken := tokenMap[token.TokenId]
+	if mapToken == nil {
+		log.Error("no token exists")
+		return token, errors.New("no token exists")
+	}
+	log.Info("Get token %v", mapToken.User.Username)
+	return mapToken, nil
 }
 
 func (token *Token) CreateNewToken(user *User) error {
@@ -112,42 +129,48 @@ func (token *Token) CreateNewToken(user *User) error {
 		log.Info("using exist token")
 		return nil
 	} else {
-		rwLock.Lock()
-		token.TokenId = uuid.NewString()
-		token.User = user
-		token.IssueTime = time.Now()
-		token.ExpireTime = time.Now().Add(time.Hour * HourOfDay)
-		token.Issuer = user.Username
-		tokenMap[token.TokenId] = *token
-
-		userTokenMap[user.Username] = token.TokenId
-		rwLock.Unlock()
-		log.Info("create new token")
-		return nil
+		return storeToken(user, token)
 	}
 }
 
+func storeToken(user *User, token *Token) error {
+	defer rwLock.Unlock()
+
+	rwLock.Lock()
+	token.TokenId = uuid.NewString()
+	token.User = user
+	token.IssueTime = time.Now()
+	token.ExpireTime = time.Now().Add(time.Hour * HourOfDay)
+	token.Issuer = user.Username
+	tokenMap[token.TokenId] = token
+
+	userTokenMap[user.Username] = token.TokenId
+	log.Info("create new token")
+	return nil
+}
+
 func (token *Token) DeleteToken() {
+	defer rwLock.Unlock()
+
 	rwLock.Lock()
 	checkedToken, isExists := tokenMap[token.TokenId]
 	if isExists {
 		delete(userTokenMap, checkedToken.User.Username)
 	}
 	delete(tokenMap, token.TokenId)
-	rwLock.Unlock()
 }
 
 func inspectToken() {
+	defer rwLock.Unlock()
 	log.Info("begin to inspect token map")
+	rwLock.Lock()
 	for tokenId := range tokenMap {
 		inspectToken := tokenMap[tokenId]
 		if time.Now().Before(inspectToken.ExpireTime) {
 			continue
 		}
 
-		rwLock.Lock()
 		delete(tokenMap, tokenId)
 		delete(userTokenMap, inspectToken.User.Username)
-		rwLock.Unlock()
 	}
 }

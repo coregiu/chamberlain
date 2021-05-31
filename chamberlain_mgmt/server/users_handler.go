@@ -13,7 +13,7 @@ func AuthHandler() gin.HandlerFunc {
 		log.Info("begin to check auth")
 		tokenId := context.GetHeader(AuthHeader)
 
-		token := auth.Token{}
+		token := &auth.Token{}
 		token.TokenId = tokenId
 		log.Info("request url = %s", context.Request.RequestURI)
 		url := context.Request.RequestURI
@@ -81,9 +81,39 @@ func GetUsersCountHandler() gin.HandlerFunc {
 	}
 }
 
+func GetUserByTokenHandler() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		token := new(auth.Token)
+		tokenId := context.GetHeader(AuthHeader)
+		token.TokenId = tokenId
+		tokenUserInfo, err := token.GetToken()
+		if err != nil {
+			context.String(500, err.Error())
+		} else {
+			context.JSON(200, tokenUserInfo)
+		}
+	}
+}
+
+func RestPasswordHandler() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		user := new(auth.User)
+		err := context.BindJSON(&user)
+		if err != nil {
+			context.String(500, err.Error())
+		}
+		err = user.ResetPassword()
+		if err != nil {
+			context.String(500, err.Error())
+		} else {
+			context.JSON(200, gin.H{"result": "success"})
+		}
+	}
+}
+
 func AddUserHandler() gin.HandlerFunc {
 	return func(context *gin.Context) {
-		user := auth.User{}
+		user := &auth.User{}
 		err := context.BindJSON(&user)
 		if err != nil {
 			log.Error(err.Error())
@@ -105,7 +135,7 @@ func AddUserHandler() gin.HandlerFunc {
 
 func UpdateUserHandler() gin.HandlerFunc {
 	return func(context *gin.Context) {
-		user := auth.User{}
+		user := &auth.User{}
 
 		err := context.BindJSON(&user)
 		if err != nil {
@@ -126,7 +156,7 @@ func UpdateUserHandler() gin.HandlerFunc {
 
 func DeleteUserHandler() gin.HandlerFunc {
 	return func(context *gin.Context) {
-		user := auth.User{}
+		user := &auth.User{}
 
 		err := context.BindJSON(&user)
 		if err != nil {
@@ -148,7 +178,7 @@ func DeleteUserHandler() gin.HandlerFunc {
 
 func LoginHandler() gin.HandlerFunc {
 	return func(context *gin.Context) {
-		user := auth.User{}
+		user := &auth.User{}
 		err := context.BindJSON(&user)
 		if err != nil {
 			log.Error(err.Error())
@@ -159,8 +189,8 @@ func LoginHandler() gin.HandlerFunc {
 		if err != nil || result == false {
 			context.String(500, "failed to login")
 		} else {
-			token := auth.Token{}
-			err := token.CreateNewToken(&user)
+			token := &auth.Token{}
+			err := token.CreateNewToken(user)
 			if err != nil {
 				log.Error("failed to create token")
 				context.String(500, "failed to login")
@@ -180,7 +210,7 @@ func LogoutHandler() gin.HandlerFunc {
 			})
 			return
 		}
-		token := auth.Token{}
+		token := &auth.Token{}
 		token.TokenId = tokenId
 		token.DeleteToken()
 		context.JSON(200, gin.H{
