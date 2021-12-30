@@ -2,8 +2,16 @@
   <div class="view">
     <a href="#"><img src="./assets/coregiu-logo.png" id="logo"/></a>
     <div id="unLoginTop" class="top">
-      <div>
-        <router-link to="/blog" class="menu"><img src="./assets/svgs/blog.svg"/>博客</router-link>
+      <div class="group">
+        <img src="./assets/svgs/blog.svg" class="subMenu"/>博客<img src="./assets/svgs/caret-down.svg"/>
+        <ul>
+          <li>
+            <router-link to="/philosophy" class="subMenu">人生哲学</router-link>
+          </li>
+          <li>
+            <router-link to="/summary" class="subMenu">技术总结</router-link>
+          </li>
+        </ul>
       </div>
       <div>
         <router-link to="/login" class="menu"><img src="./assets/svgs/login.svg"/>登录</router-link>
@@ -11,8 +19,16 @@
     </div>
 
     <div id="loginTop" class="top">
-      <div>
-        <router-link to="/blog" class="menu"><img src="./assets/svgs/blog.svg"/>博客</router-link>
+      <div class="group">
+        <img src="./assets/svgs/blog.svg" class="subMenu"/>博客<img src="./assets/svgs/caret-down.svg"/>
+        <ul>
+          <li>
+            <router-link to="/philosophy" class="subMenu">人生哲学</router-link>
+          </li>
+          <li>
+            <router-link to="/summary" class="subMenu">技术总结</router-link>
+          </li>
+        </ul>
       </div>
       <div>
         <router-link to="/notebook" class="menu"><img src="./assets/svgs/notebook.svg"/>记事本</router-link>
@@ -39,9 +55,6 @@
           </li>
           <li>
             <router-link to="/sys_back" class="subMenu">备份恢复</router-link>
-          </li>
-          <li>
-            <router-link to="/refresh_blogs" class="subMenu">更新博客</router-link>
           </li>
         </ul>
       </div>

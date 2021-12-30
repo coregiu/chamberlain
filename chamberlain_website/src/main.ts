@@ -30,6 +30,9 @@ import DataView from "primevue/dataview";
 import Avatar from "primevue/avatar";
 import AutoComplete from "primevue/autocomplete";
 import Tree from "primevue/tree";
+import FileUpload from "primevue/fileupload";
+import Toolbar from "primevue/toolbar";
+import DataTable from "primevue/datatable";
 
 const app = createApp(App);
 app.use(router);
@@ -55,6 +58,9 @@ app.component("DataView", DataView);
 app.component("Avatar", Avatar);
 app.component("AutoComplete", AutoComplete);
 app.component("Tree", Tree);
+app.component("FileUpload", FileUpload);
+app.component("Toolbar", Toolbar);
+app.component("DataTable", DataTable);
 
 app.config.globalProperties.$axios = ajax;
 app.config.globalProperties.$token = token;

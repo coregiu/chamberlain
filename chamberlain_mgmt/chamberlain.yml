@@ -10,7 +10,7 @@ DatabaseConfig:
   Password: 199527
 BlogWorkPath: /giu/chamberlain/books
 BlogRepositories:
-  - RepoPath: https://github.com/coregiu/philosophy.git
+  - RepoPath: git@github.com:coregiu/philosophy.git
     RepoName: Philosophy
-  - RepoPath: https://github.com/coregiu/summary.git
+  - RepoPath: git@github.com:coregiu/summary.git
     RepoName: Technology

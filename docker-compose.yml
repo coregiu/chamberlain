@@ -11,7 +11,7 @@ services:
     depends_on:
       - chamberlain
   chamberlain:
-    image: "chamberlain:1.9"
+    image: "chamberlain:1.10"
     ports:
       - "8080:8080"
     volumes:

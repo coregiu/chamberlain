@@ -32,12 +32,11 @@ export default {
 
 <style>
 #user_info {
-  width: 60%;
-  height: 87vh;
-  background-color: #fff;
+  position: relative;
+  top: 15%;
+  width: 50%;
   text-align: left;
-  overflow: scroll;
   margin: 0 auto;
-  padding-left: 200px;
+  padding-left: 300px;
 }
 </style>

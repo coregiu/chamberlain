@@ -1,5 +1,6 @@
 import {createRouter, createWebHashHistory} from 'vue-router'
-import Blog from "../views/blog.vue"
+import Philosophy from "../views/philosophy.vue"
+import Summary from "../views/summary.vue"
 import Notebook from "../views/notebook.vue"
 import Dashboard from "../views/dashboard.vue"
 import InputDetails from "../views/input_details.vue"
@@ -11,7 +12,7 @@ import SysBack from "../views/sys_back.vue"
 import SysLog from "../views/sys_log.vue"
 import UserInfo from "../views/user_info.vue"
 import UpdatePassword from "../views/update_password.vue"
-import RefreshBlogs from "../views/refresh_blogs.vue"
+import RefreshBlogs from "../views/summary.vue"
 
 const routes: Array<any> = [
     {
@@ -19,9 +20,13 @@ const routes: Array<any> = [
         name: "Home",
         component: Dashboard,
     },{
-        path: "/blog",
-        name: "Blog",
-        component: Blog,
+        path: "/philosophy",
+        name: "Philosophy",
+        component: Philosophy,
+    },{
+        path: "/summary",
+        name: "Summary",
+        component: Summary,
     },
     {
         path: "/notebook",

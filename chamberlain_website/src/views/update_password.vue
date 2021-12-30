@@ -1,7 +1,7 @@
 <template>
-  <div>
-    用户 <InputText type="text" v-model="username"/><br><br>
-    旧密码 <InputText type="password" v-model="password"/><br><br>
+  <div id="password_div">
+    &nbsp;&nbsp;用&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;户&nbsp;&nbsp;&nbsp; &nbsp;<InputText type="text" v-model="username"/><br><br>
+    旧&nbsp;&nbsp;&nbsp;&nbsp;密&nbsp;&nbsp;&nbsp;&nbsp;码 <InputText type="password" v-model="password"/><br><br>
     设置新密码 <InputText type="password" v-model="newPassword"/><br><br>
     确认新密码 <InputText type="password" v-model="newPasswordVery"/><br><br>
     <Button label="submit" @click="doSetPassword()" v-bind:disabled="disableBn">修改密码</Button><br>
@@ -52,3 +52,13 @@ export default {
   }
 }
 </script>
+
+
+
+<style scoped>
+#password_div {
+  position: relative;
+  top: 25%;
+  text-align: center;
+}
+</style>
