@@ -30,7 +30,7 @@ func (user *User) Adduser() error {
 		log.Error("Db connection is nil")
 		return errors.New("database connection is nil")
 	}
-	result := db.Create(&user)
+	result := db.Exec("INSERT INTO `users` (`username`,`password`,`role`) VALUES (?, ?, ?)", user.Username, user.Password, user.Role)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -38,7 +38,6 @@ func (user *User) Adduser() error {
 		return errors.New("There is no user named " + user.Username)
 	}
 	return nil
-
 }
 
 func (user *User) UpdateUser() error {
@@ -47,15 +46,13 @@ func (user *User) UpdateUser() error {
 		log.Error("Db connection is nil")
 		return errors.New("database connection is nil")
 	}
-	result := db.Model(&User{}).Where("username = ?", user.Username).Update("Password", user.Password)
+	result := db.Model(&User{}).Where("username = ?", user.Username).Update("Role", user.Role).Update("Password", user.Password)
 	if result.Error != nil {
+		log.Error(result.Error.Error())
 		return result.Error
 	}
-	if result.RowsAffected == 0 {
-		return errors.New("There is no user named " + user.Username)
-	}
-	return nil
 
+	return nil
 }
 
 func (user *User) DeleteUser() error {

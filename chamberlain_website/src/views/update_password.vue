@@ -10,8 +10,8 @@
 </template>
 
 <script>
-import {getUserByToken} from '../api/api'
-import {resetPassword} from '../api/api'
+import {getUserByToken} from '../api/system_api'
+import {resetPassword} from '../api/system_api'
 export default {
   name: "reset_password",
   data() {

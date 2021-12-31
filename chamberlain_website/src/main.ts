@@ -33,6 +33,9 @@ import Tree from "primevue/tree";
 import FileUpload from "primevue/fileupload";
 import Toolbar from "primevue/toolbar";
 import DataTable from "primevue/datatable";
+import Column from 'primevue/column';
+import ColumnGroup from 'primevue/columngroup';
+import RadioButton from 'primevue/radiobutton';
 
 const app = createApp(App);
 app.use(router);
@@ -61,6 +64,9 @@ app.component("Tree", Tree);
 app.component("FileUpload", FileUpload);
 app.component("Toolbar", Toolbar);
 app.component("DataTable", DataTable);
+app.component("ColumnGroup", ColumnGroup);
+app.component("Column", Column);
+app.component("RadioButton", RadioButton);
 
 app.config.globalProperties.$axios = ajax;
 app.config.globalProperties.$token = token;

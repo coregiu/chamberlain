@@ -22,6 +22,14 @@ create table inputs
 );
 create index idx_input_month on year, month);
 
+create table logs
+(
+    LogId bigint primary key,
+    Username varchar(16),
+    Operation varchar(32),
+    OpTime   timestamp,
+    Description varchar(512)
+);
 
 insert into users value ('test', '123456', 'admin');
 insert into users value ('test1', '123456', 'user');

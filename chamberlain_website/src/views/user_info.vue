@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import {getUserByToken, login} from "../api/api";
+import {getUserByToken, login} from "../api/system_api";
 export default {
   name: "user_info",
   data() {

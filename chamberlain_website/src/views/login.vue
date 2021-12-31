@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import {login} from '../api/api'
+import {login} from '../api/system_api'
 export default {
   name: "login",
   data() {

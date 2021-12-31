@@ -16,15 +16,6 @@ export const logout = function () {
     return ajax.post("/api/users/logout", headers, data)
 }
 
-export const refreshBlogs = function () {
-    let data = {}
-    let headers = {
-        "Content-Type" : "application/json;charset=UTF-8",
-        "X-AUTH-TOKEN" : token.methods.getToken()
-    }
-    return ajax.post("/api/blogs", headers, data)
-}
-
 export const getUserByToken = function () {
     let headers = {
         "Content-Type" : "application/json;charset=UTF-8",
