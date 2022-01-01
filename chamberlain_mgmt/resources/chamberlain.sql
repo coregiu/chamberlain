@@ -1,35 +1,35 @@
-create database chamberlain;
+CREATE DATABASE chamberlain;
 
-create table users
+CREATE TABLE USERS
 (
-    Username varchar(16) primary key,
-    Password varchar(32),
-    Role     varchar(16)
+    USERNAME varchar(16) primary key,
+    PASSWORD varchar(32),
+    ROLE     varchar(16)
 );
-create index idx_pass on users(password);
+CREATE INDEX IDX_PASS ON USERS(PASSWORD);
 
-create table inputs
+CREATE TABLE INPUTS
 (
-    InputTime   bigint primary key,
-    Year        int,
-    Month       int,
-    Type        varchar(16),
-    Base        float,
-    AllInput    float,
-    Tax         float,
-    Actual      float,
-    Description varchar(512)
+    INPUT_TIME  bigint primary key,
+    YEAR        int,
+    MONTH       int,
+    TYPE        varchar(16),
+    BASE        float,
+    ALL_INPUT   float,
+    TAX         float,
+    ACTUAL      float,
+    DESCRIPTION varchar(512)
 );
-create index idx_input_month on year, month);
+CREATE INDEX IDX_INPUT_MONTH ON YEAR, MONTH);
 
-create table logs
+CREATE TABLE LOGS
 (
-    LogId bigint primary key,
-    Username varchar(16),
-    Operation varchar(32),
-    OpTime   timestamp,
-    Description varchar(512)
+    LOG_ID       bigint primary key,
+    USERNAME     varchar(16),
+    OPERATION    varchar(32),
+    OP_TIME      timestamp,
+    DESCRIPTION  varchar(512)
 );
 
-insert into users value ('test', '123456', 'admin');
-insert into users value ('test1', '123456', 'user');
+INSERT INTO USERS VALUE ('test', '123456', 'admin');
+INSERT INTO USERS VALUE ('test1', '123456', 'user');

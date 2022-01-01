@@ -7,10 +7,10 @@ import (
 )
 
 type User struct {
-	Username    string `form:"Username" json:"Username" binding:"required"`
-	Password    string
-	Role        string
-	NewPassword string
+	Username    string `form:"Username" json:"Username" binding:"required" gorm:"column:USERNAME"`
+	Password    string `gorm:"column:PASSWORD"`
+	Role        string `gorm:"column:ROLE"`
+	NewPassword string `gorm:"-"`
 }
 
 type UserMgmt interface {
@@ -24,13 +24,17 @@ type UserMgmt interface {
 	ResetPassword() error
 }
 
+func (User) TableName() string  {
+	return "USERS"
+}
+
 func (user *User) Adduser() error {
 	db := config.GetDbConnection()
 	if db == nil {
 		log.Error("Db connection is nil")
 		return errors.New("database connection is nil")
 	}
-	result := db.Exec("INSERT INTO `users` (`username`,`password`,`role`) VALUES (?, ?, ?)", user.Username, user.Password, user.Role)
+	result := db.Create(&user)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -46,7 +50,7 @@ func (user *User) UpdateUser() error {
 		log.Error("Db connection is nil")
 		return errors.New("database connection is nil")
 	}
-	result := db.Model(&User{}).Where("username = ?", user.Username).Update("Role", user.Role).Update("Password", user.Password)
+	result := db.Model(&User{}).Where("USERNAME = ?", user.Username).Update("ROLE", user.Role).Update("PASSWORD", user.Password)
 	if result.Error != nil {
 		log.Error(result.Error.Error())
 		return result.Error
@@ -61,7 +65,7 @@ func (user *User) DeleteUser() error {
 		log.Error("Db connection is nil")
 		return errors.New("database connection is nil")
 	}
-	result := db.Delete(&user, "Username = ?", user.Username)
+	result := db.Delete(&user, "USERNAME = ?", user.Username)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -77,7 +81,7 @@ func (user *User) GetUser() error {
 		log.Error("Db connection is nil")
 		return errors.New("database connection is nil")
 	}
-	result := db.Select("Username", "Role").Find(&user, "Username = ?", user.Username)
+	result := db.Select("USERNAME", "ROLE").Find(&user, "USERNAME = ?", user.Username)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -111,7 +115,7 @@ func (user *User) GetUsers(offset int, limit int) ([]User, error) {
 		return nil, errors.New("database connection is nil")
 	}
 	users := make([]User, 0)
-	result := db.Select("Username", "Role").Limit(limit).Offset(offset).Find(&users)
+	result := db.Select("USERNAME", "ROLE").Limit(limit).Offset(offset).Find(&users)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -127,7 +131,7 @@ func (user *User) CheckAuth() (bool, error) {
 		log.Error("Db connection is nil")
 		return false, errors.New("database connection is nil")
 	}
-	result := db.Select("Username", "Role").Find(&user, "Username = ? and Password = ?", user.Username, user.Password)
+	result := db.Select("USERNAME", "ROLE").Find(&user, "USERNAME = ? AND PASSWORD = ?", user.Username, user.Password)
 	if result.Error != nil {
 		return false, result.Error
 	}

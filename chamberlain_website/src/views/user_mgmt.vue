@@ -1,6 +1,6 @@
 <template>
   <DataTable :value="userInfoList" :paginator="true" class="p-datatable-customers" :rows="10"
-             dataKey="id" :rowHover="true" :filters="filters"
+             dataKey="Username" :rowHover="true" :filters="filters"
              filterDisplay="row"
              :loading="loading"
              paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
@@ -132,13 +132,10 @@ export default {
   },
   methods: {
     addUserDialog() {
-      this.userInfo = {};
+      this.userInfo = {"Role": "user"};
       this.submitted = false;
       this.isNewUserDialogOpen = true;
       this.isAddOperation = true;
-    },
-    updateUser(userInfo) {
-      console.log("update: " + userInfo.data.Username + " - " + userInfo.data.Role)
     },
     hideDialog() {
       this.isNewUserDialogOpen = false;
@@ -163,6 +160,7 @@ export default {
             this.userInfoList = this.userInfoList.filter(val => val.Username !== this.userInfo.Username);
           }
           this.userInfoList.push(this.userInfo)
+          this.userInfoList.sort(function(a, b){return a.Username.localeCompare(b.Username)})
           this.userInfo = {};
           this.cPassword = "";
         }

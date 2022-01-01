@@ -1,6 +1,6 @@
 <template>
   <div id="login_div">
-    用户 <InputText type="text" v-model="username"/><br><br>
+    用户 <InputText type="text" v-model="username" required="true" autofocus/><br><br>
     密码 <InputText type="password" v-model="password" @keyup.enter.native="doLogin()"/><br><br>
     <Button label="submit" @click="doLogin()" v-bind:disabled="disableBn">登录</Button><br>
     <Dialog v-model:visible="display" header="登录失败">{{message}}</Dialog>

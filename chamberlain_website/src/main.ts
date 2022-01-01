@@ -36,6 +36,8 @@ import DataTable from "primevue/datatable";
 import Column from 'primevue/column';
 import ColumnGroup from 'primevue/columngroup';
 import RadioButton from 'primevue/radiobutton';
+import Calendar from 'primevue/calendar';
+import Textarea from 'primevue/textarea';
 
 const app = createApp(App);
 app.use(router);
@@ -67,6 +69,8 @@ app.component("DataTable", DataTable);
 app.component("ColumnGroup", ColumnGroup);
 app.component("Column", Column);
 app.component("RadioButton", RadioButton);
+app.component("Calendar", Calendar);
+app.component("Textarea", Textarea);
 
 app.config.globalProperties.$axios = ajax;
 app.config.globalProperties.$token = token;
