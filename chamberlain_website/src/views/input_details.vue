@@ -1,7 +1,6 @@
 <template>
   <DataTable :value="inputInfoList" :paginator="true" class="p-datatable-customers" :rows="10"
-             dataKey="InputTime" :rowHover="true" :filters="filters"
-             filterDisplay="row"
+             dataKey="InputTime" :rowHover="true"
              :loading="loading"
              paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
              :rowsPerPageOptions="[10,25,50]"
@@ -14,7 +13,8 @@
           <Button type="button" class="p-button-secondary" @click="addInputDialog">添加信息</Button>&nbsp;&nbsp;&nbsp;&nbsp;
           <span class="p-input-icon-left">
               <i class="pi pi-search"/>
-              <InputText v-model="filters['global']" placeholder="全局检索"/>
+              <InputText v-model="queryYear" placeholder="查询年度" @keyup.enter.native="queryYearData"
+                         :class="{'p-invalid': submitted && (isNaN(queryYear) || queryYear > 10000 || queryYear < 1000)}" />
           </span>
         </div>
       </div>
@@ -27,21 +27,9 @@
     </template>
 
     <Column field="InputTime" header="时间" :sortable="true" sortField="InputTime"/>
-    <Column field="Year" header="年度" :sortable="true" sortField="Year" filterField="Year" filterMatchMode="contains">
-      <template #filter>
-        <InputText type="text" v-model="filters['Year']" class="p-column-filter" placeholder="按年度检索" size="4"/>
-      </template>
-    </Column>
-    <Column field="Month" header="月份" :sortable="true" sortField="Month" filterField="Month" filterMatchMode="contains">
-      <template #filter>
-        <InputText type="text" v-model="filters['Month']" class="p-column-filter" placeholder="按月份检索" size="2"/>
-      </template>
-    </Column>
-    <Column field="Type" header="收入类型" :sortable="true" sortField="Type" filterField="Type" filterMatchMode="contains">
-      <template #filter>
-        <InputText type="text" v-model="filters['Type']" class="p-column-filter" placeholder="按收入类型检索" size="6"/>
-      </template>
-    </Column>
+    <Column field="Year" header="年度" :sortable="true" sortField="Year" />
+    <Column field="Month" header="月份" :sortable="true" sortField="Month" />
+    <Column field="Type" header="收入类型" :sortable="true" sortField="Type" />
     <Column field="AllInput" header="税前收入" :sortable="true" sortField="AllInput"/>
     <Column field="Actual" header="税后收入" :sortable="true" sortField="Actual"/>
     <Column field="Tax" header="缴税额" :sortable="true" sortField="Tax"/>
@@ -142,7 +130,7 @@ export default {
     return {
       inputInfoList: null,
       loading: true,
-      filters: {},
+      queryYear: "",
       inputInfo: {},
       inputTime: new Date(),
       isNewInputDialogOpen: false,
@@ -249,11 +237,23 @@ export default {
       this.inputInfo = {...inputInfo.data};
       this.submitted = false;
       this.isNewInputDialogOpen = true;
+    },
+
+    queryYearData() {
+      this.submitted = true
+      if (!this.queryYear) {
+        this.inputService.getInputList(0, 0, 10000, 0).then(data => this.inputInfoList = data);
+        this.loading = false
+        this.submitted = false
+      } else {
+        if (isNaN(this.queryYear) || this.queryYear > 10000 || this.queryYear < 1000) {
+          return
+        }
+        this.inputService.getInputList(this.queryYear, 0, 10000, 0).then(data => this.inputInfoList = data);
+        this.loading = false
+        this.submitted = false
+      }
     }
   }
 }
 </script>
-
-<style scoped>
-
-</style>
