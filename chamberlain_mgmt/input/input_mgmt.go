@@ -22,6 +22,7 @@ type Input struct {
 
 type InputMgmt interface {
 	AddInput() error
+	BatchAddInput(inputs *[]Input) error
 	UpdateInput() error
 	DeleteInput() error
 	/*Get details*/
@@ -52,6 +53,19 @@ func (input *Input) AddInput() error {
 	}
 	if result.RowsAffected == 0 {
 		return errors.New("failed to insert input:" + fmt.Sprint(input.InputTime))
+	}
+	return nil
+}
+
+func (input Input) BatchAddInput(inputs *[]Input) error {
+	db := config.GetDbConnection()
+	if db == nil {
+		log.Error("Db connection is nil")
+		return errors.New("database connection is nil")
+	}
+	result := db.CreateInBatches(inputs, len(*inputs))
+	if result.Error != nil {
+		return result.Error
 	}
 	return nil
 }
@@ -107,9 +121,6 @@ func (input *Input) GetInputs(year uint16, month uint8, limit int, offset int) (
 	result := db.Order("INPUT_TIME DESC").Limit(limit).Offset(offset).Find(&inputs)
 	if result.Error != nil {
 		return nil, result.Error
-	}
-	if result.RowsAffected == 0 {
-		return nil, errors.New("failed to get input")
 	}
 	return inputs, nil
 }

@@ -1,5 +1,5 @@
 <template>
-  <DataTable :value="inputInfoList" :paginator="true" class="p-datatable-customers" :rows="10"
+  <DataTable ref="inputTable" :value="inputInfoList" :paginator="true" class="p-datatable-customers" :rows="10"
              dataKey="InputTime" :rowHover="true"
              :loading="loading"
              paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
@@ -10,11 +10,15 @@
       <div>
         <div style="float:left">收入列表</div>
         <div style="float:right">
-          <Button type="button" class="p-button-secondary" @click="addInputDialog">添加信息</Button>&nbsp;&nbsp;&nbsp;&nbsp;
+          <Button type="button" class="p-button-secondary" @click="addInputDialog">添加收入信息</Button>&nbsp;
+          <FileUpload id="fileUploadId" mode="basic" accept=".csv" :maxFileSize="102400" :customUpload="true"
+                      @uploader="uploadBatch($event.files)" :auto="true" label="导入" chooseLabel="导入"
+                      class="p-button-secondary"/>&nbsp;
+          <Button label="导出" icon="pi pi-upload" class="p-button-secondary" @click="exportCSV($event)"/>&nbsp;
           <span class="p-input-icon-left">
               <i class="pi pi-search"/>
               <InputText v-model="queryYear" placeholder="查询年度" @keyup.enter.native="queryYearData"
-                         :class="{'p-invalid': submitted && (isNaN(queryYear) || queryYear > 10000 || queryYear < 1000)}" />
+                         :class="{'p-invalid': submitted && (isNaN(queryYear) || queryYear > 10000 || queryYear < 1000)}"/>
           </span>
         </div>
       </div>
@@ -27,9 +31,9 @@
     </template>
 
     <Column field="InputTime" header="时间" :sortable="true" sortField="InputTime"/>
-    <Column field="Year" header="年度" :sortable="true" sortField="Year" />
-    <Column field="Month" header="月份" :sortable="true" sortField="Month" />
-    <Column field="Type" header="收入类型" :sortable="true" sortField="Type" />
+    <Column field="Year" header="年度" :sortable="true" sortField="Year"/>
+    <Column field="Month" header="月份" :sortable="true" sortField="Month"/>
+    <Column field="Type" header="收入类型" :sortable="true" sortField="Type"/>
     <Column field="AllInput" header="税前收入" :sortable="true" sortField="AllInput"/>
     <Column field="Actual" header="税后收入" :sortable="true" sortField="Actual"/>
     <Column field="Tax" header="缴税额" :sortable="true" sortField="Tax"/>
@@ -148,6 +152,9 @@ export default {
   mounted() {
     this.inputService.getInputList(0, 0, 10000, 0).then(data => this.inputInfoList = data);
     this.loading = false;
+    document.getElementById("fileUploadId").style.display = "inline-block"
+    document.getElementById("fileUploadId").style.position = "relative"
+    document.getElementById("fileUploadId").style.top = "9px"
   },
   methods: {
     addInputDialog() {
@@ -211,7 +218,9 @@ export default {
           this.inputInfoList = this.inputInfoList.filter(val => val.InputTime !== this.inputInfo.InputTime);
         }
         this.inputInfoList.push(this.inputInfo)
-        this.inputInfoList.sort(function(a,b){return b.InputTime - a.InputTime})
+        this.inputInfoList.sort(function (a, b) {
+          return b.InputTime - a.InputTime
+        })
         this.inputInfo = {};
       }
     },
@@ -241,17 +250,74 @@ export default {
 
     queryYearData() {
       this.submitted = true
+
       if (!this.queryYear) {
-        this.inputService.getInputList(0, 0, 10000, 0).then(data => this.inputInfoList = data);
-        this.loading = false
-        this.submitted = false
-      } else {
-        if (isNaN(this.queryYear) || this.queryYear > 10000 || this.queryYear < 1000) {
-          return
+        this.queryYear = 0
+      }
+
+      if (isNaN(this.queryYear) || this.queryYear > 10000 || (this.queryYear < 1000 && this.queryYear !== 0)) {
+        return
+      }
+      this.inputService.getInputList(this.queryYear, 0, 10000, 0).then(data => this.inputInfoList = data);
+      this.loading = false
+      this.submitted = false
+      this.queryYear = this.queryYear === 0 ? "" : this.queryYear
+    },
+
+    exportCSV() {
+      this.$refs.inputTable.exportCSV();
+    },
+
+    uploadBatch(files) {
+      const reader = new FileReader()
+      // 读取文件
+      reader.readAsText(files[0], "UTF-8")
+      // 读取完文件之后会回来这里
+      reader.onload = async function (e) {
+        // 读取文件内容
+        const fileString = e.target.result
+        // 接下来可对文件内容进行处理
+        let fileArr = fileString.split("\n")
+        let uploadArr = []
+        fileArr.forEach(function (lineContent) {
+          if (!lineContent || lineContent.trim() === "") {
+            return;
+          }
+
+          let contentArr
+          if (lineContent.startsWith("\"")) {
+            lineContent = lineContent.substring(1, lineContent.length - 2)
+            contentArr = lineContent.split("\",\"")
+          } else {
+            contentArr = lineContent.split(",")
+          }
+
+          if (isNaN(contentArr[0])) {
+            return
+          }
+
+          uploadArr.push({
+            "InputTime": Number(contentArr[0]),
+            "Year": Number(contentArr[1]),
+            "Month": Number(contentArr[2]),
+            "Type": contentArr[3],
+            "AllInput": Number(contentArr[4]),
+            "Actual": Number(contentArr[5]),
+            "Tax": Number(contentArr[6]),
+            "Base": Number(contentArr[7]),
+            "Description": contentArr[8] === undefined ? "" : contentArr[8].replaceAll('\"\"', '\"')
+          })
+        })
+
+
+        let uploadService = new InputService();
+        let res = await uploadService.addBatchInputs(uploadArr)
+        if ((typeof res == "string") && (res.indexOf("err:") === 0)) {
+          alert("导入失败，请检查数据后重新导入！")
+          location.reload()
+        } else {
+          location.reload()
         }
-        this.inputService.getInputList(this.queryYear, 0, 10000, 0).then(data => this.inputInfoList = data);
-        this.loading = false
-        this.submitted = false
       }
     }
   }

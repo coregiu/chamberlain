@@ -15,7 +15,18 @@ export default class InputService{
             "Content-Type" : "application/json;charset=UTF-8",
             "X-AUTH-TOKEN" : token.methods.getToken()
         }
-        let data = JSON.stringify(inputInfo);
+        let inputs = [inputInfo]
+        let data = JSON.stringify(inputs);
+        return ajax.post("/api/inputs", headers, data)
+    }
+
+    addBatchInputs(inputInfoList) {
+        let headers = {
+            "Content-Type" : "application/json;charset=UTF-8",
+            "X-AUTH-TOKEN" : token.methods.getToken()
+        }
+        let data = JSON.stringify(inputInfoList);
+        console.log("data = " + data)
         return ajax.post("/api/inputs", headers, data)
     }
 

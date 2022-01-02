@@ -10,15 +10,16 @@ import (
 
 func AddInputHandler() gin.HandlerFunc {
 	return func(context *gin.Context) {
-		input := io.Input{}
-		err := context.BindJSON(&input)
+		input := &io.Input{}
+		inputs := make([]io.Input, 0)
+		err := context.BindJSON(&inputs)
 		if err != nil {
 			log.Error(err.Error())
 			context.String(500, err.Error())
 			return
 		}
-		log.Debug("InputTime =%s", fmt.Sprint(input.InputTime))
-		err = input.AddInput()
+		log.Debug("input length =%s", fmt.Sprint(len(inputs)))
+		err = input.BatchAddInput(&inputs)
 		if err != nil {
 			context.String(500, err.Error())
 		} else {
