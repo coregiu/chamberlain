@@ -5,7 +5,7 @@
     设置新密码 <InputText type="password" v-model="newPassword"/><br><br>
     确认新密码 <InputText type="password" v-model="newPasswordVery"/><br><br>
     <Button label="submit" @click="doSetPassword()" v-bind:disabled="disableBn">修改密码</Button><br>
-    <Dialog v-model:visible="display" header="修改密码失败">{{message}}</Dialog>
+    <Dialog v-model:visible="display" header="提示">{{message}}</Dialog>
   </div>
 </template>
 
@@ -43,8 +43,8 @@ export default {
         this.display = true;
         this.message = "修改失败，请正确输入！";
       } else {
-        this.$token.methods.setChamberlainToken(res.TokenId);
-        this.$token.methods.showLoginMenu();
+        this.display = true;
+        this.message = "修改密码成功！";
         this.$router.push("/");
       }
       this.disableBn = false;

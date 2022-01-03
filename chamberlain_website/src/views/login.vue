@@ -28,8 +28,8 @@ export default {
         this.display = true;
         this.message = "感谢抬爱，请正确输入用户名和密码！";
       } else {
-        this.$token.methods.setChamberlainToken(res.TokenId);
-        this.$token.methods.showLoginMenu();
+        this.$token.methods.setChamberlainToken(res.TokenId, res.User.Role);
+        this.$menu.methods.setMenuTop()
         this.$router.push("/");
       }
       this.disableBn = false;

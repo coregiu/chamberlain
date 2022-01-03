@@ -10,7 +10,7 @@ export default {
   created() {
     logout();
     this.$token.methods.clearChamberlainToken();
-    this.$token.methods.showUnloginMenu();
+    this.$menu.methods.setMenuTop()
     this.$router.push("/");
   }
 }

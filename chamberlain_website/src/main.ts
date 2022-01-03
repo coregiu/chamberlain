@@ -3,6 +3,7 @@ import router from './router'
 import App from './App.vue'
 import './index.scss'
 import {token} from './components/token'
+import {menu} from './components/menu'
 
 import PrimeVue from 'primevue/config'
 import 'primeicons/primeicons.css'
@@ -74,11 +75,6 @@ app.component("Textarea", Textarea);
 
 app.config.globalProperties.$axios = ajax;
 app.config.globalProperties.$token = token;
+app.config.globalProperties.$menu = menu;
 app.config.globalProperties.$router = router;
 app.mount('#app');
-
-if (!token.methods.checkChamberlainToken()) {
-    token.methods.showUnloginMenu();
-} else {
-    token.methods.showLoginMenu();
-}

@@ -18,8 +18,16 @@ const request = (url, method, headers, data) => {
                 }
             }
         ).catch(res => {
-            console.error("Failed to send request");
-            resolve("err:" + res);
+            if (res.toLocaleString().includes("500")) {
+                console.error("Failed to send request for system error!");
+                resolve("err: 500");
+            } else if (res.toLocaleString().includes("401")) {
+                console.error("Failed to send request for unauthorized!");
+                resolve("err: 401");
+            } else {
+                console.error("Failed to send request for unknown!")
+                resolve("err: " + res);
+            }
         })
     })
 }

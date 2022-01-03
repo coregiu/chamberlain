@@ -126,6 +126,8 @@ func (token *Token) CreateNewToken(user *User) error {
 
 	if isExists {
 		token.TokenId = checkedToken
+		user.Password = ""
+		token.User = user
 		log.Info("using exist token")
 		return nil
 	} else {
@@ -137,6 +139,7 @@ func storeToken(user *User, token *Token) error {
 	defer rwLock.Unlock()
 
 	rwLock.Lock()
+	user.Password = ""
 	token.TokenId = uuid.NewString()
 	token.User = user
 	token.IssueTime = time.Now()
