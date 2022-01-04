@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const service = axios.create({
-    timeout: 18000
+    timeout: 3000
 })
 
 const request = (url, method, headers, data) => {
