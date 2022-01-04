@@ -1,5 +1,5 @@
 <template>
-  <iframe id="iframeContent" src = "public/books/summary/_build/html/index.html"></iframe>
+  <iframe id="iframeContent" src = "../books/summary/_build/html/index.html"></iframe>
 </template>
 
 <script>

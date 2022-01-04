@@ -1,5 +1,5 @@
 <template>
-  <iframe id="iframeContent" src = "public/books/philosophy/_build/html/index.html"></iframe>
+  <iframe id="iframeContent" src = "../books/philosophy/_build/html/index.html"></iframe>
 </template>
 
 <script>

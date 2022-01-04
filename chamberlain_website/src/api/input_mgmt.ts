@@ -26,7 +26,6 @@ export default class InputService{
             "X-AUTH-TOKEN" : token.methods.getToken()
         }
         let data = JSON.stringify(inputInfoList);
-        console.log("data = " + data)
         return ajax.post("/api/inputs", headers, data)
     }
 
