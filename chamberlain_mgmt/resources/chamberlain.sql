@@ -20,7 +20,7 @@ CREATE TABLE INPUTS
     ACTUAL      float,
     DESCRIPTION varchar(512)
 );
-CREATE INDEX IDX_INPUT_MONTH ON YEAR, MONTH);
+CREATE INDEX IDX_INPUT_MONTH ON INPUTS(YEAR, MONTH);
 
 CREATE TABLE LOGS
 (
@@ -28,8 +28,20 @@ CREATE TABLE LOGS
     USERNAME     varchar(16),
     OPERATION    varchar(32),
     OP_TIME      timestamp,
+    OP_RESULT    varchar(16),
     DESCRIPTION  varchar(512)
 );
+CREATE INDEX IDX_LOGS_OP_TIME ON LOGS(OP_TIME);
 
-INSERT INTO USERS VALUE ('test', '123456', 'admin');
-INSERT INTO USERS VALUE ('test1', '123456', 'user');
+CREATE TABLE NOTEBOOK
+(
+    NOTE_ID      varchar(32) primary key,
+    USERNAME     varchar(16),
+    CONTENT      text,
+    NOTE_TIME    timestamp,
+    FINISH_TIME  timestamp,
+    STATUS       varchar(16)
+);
+CREATE INDEX IDX_LOGS_OP_TIME ON LOGS(OP_TIME);
+
+INSERT INTO USERS VALUE ('test', 'test', 'admin');

@@ -93,12 +93,11 @@ export default {
 </script>
 <style>
 #home {
-  width: 60%;
+  width: 90%;
   height: 87vh;
   background-color: #fff;
-  text-align: left;
+  text-align: center;
   overflow: scroll;
   margin: 0 auto;
-  padding-left: 200px;
 }
 </style>

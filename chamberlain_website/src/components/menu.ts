@@ -2,16 +2,16 @@ import {token} from "./token";
 
 const UN_LOGIN_MENU = [
     {
-        "name": "📋博客 ▽",
+        "name": "🖍博客 ▽",
         "image": "../../src/assets/svgs/blog.svg",
         "url": "-",
         "subMenu": [
             {
-                "name": "🚴 人生哲学",
+                "name": "🕸 人生哲学",
                 "url": "/philosophy"
             },
             {
-                "name": "🗜️ 技术总结",
+                "name": "🖥 技术总结",
                 "url": "/summary"
             }
         ]
@@ -23,16 +23,16 @@ const UN_LOGIN_MENU = [
 
 const USER_LOGIN_MENU = [
     {
-        "name": "📋博客 ▽",
+        "name": "🖍博客 ▽",
         "image": "../../src/assets/svgs/blog.svg",
         "url": "-",
         "subMenu": [
             {
-                "name": "🚴 人生哲学",
+                "name": "🕸 人生哲学",
                 "url": "/philosophy"
             },
             {
-                "name": "🗜️ 技术总结",
+                "name": "🖥 技术总结",
                 "url": "/summary"
             }
         ]
@@ -62,16 +62,16 @@ const USER_LOGIN_MENU = [
 
 const ADMIN_LOGIN_MENU = [
     {
-        "name": "📋博客 ▽",
+        "name": "🖍博客 ▽",
         "image": "../../src/assets/svgs/blog.svg",
         "url": "-",
         "subMenu": [
             {
-                "name": "🚴 人生哲学",
+                "name": "🕸 人生哲学",
                 "url": "/philosophy"
             },
             {
-                "name": "🗜️ 技术总结",
+                "name": "🖥 技术总结",
                 "url": "/summary"
             }
         ]
@@ -94,20 +94,20 @@ const ADMIN_LOGIN_MENU = [
             }
         ]
     }, {
-        "name": "🔧系统管理 ▽",
+        "name": "🛠系统管理 ▽",
         "image": "../../src/assets/svgs/admin.svg",
         "url": "-",
         "subMenu": [
             {
-                "name": "🔧 用户管理",
+                "name": "🛠 用户管理",
                 "url": "/user_mgmt"
             },
             {
-                "name": "📃 操作日志",
+                "name": "💾 操作日志",
                 "url": "/sys_log"
             },
             {
-                "name": "💾 备份恢复",
+                "name": "💽 备份恢复",
                 "url": "/sys_back"
             }
         ]
