@@ -46,4 +46,28 @@ export default class InputService{
         let data = JSON.stringify(inputInfo);
         return ajax.put("/api/inputs", headers, data)
     }
+
+    getYearsTrendingData() {
+        let headers = {
+            "Content-Type" : "application/json;charset=UTF-8",
+            "X-AUTH-TOKEN" : token.methods.getToken()
+        }
+        return ajax.get("/api/inputs/statistic", headers)
+    }
+
+    getYearMonthStatisticsData(year) {
+        let headers = {
+            "Content-Type" : "application/json;charset=UTF-8",
+            "X-AUTH-TOKEN" : token.methods.getToken()
+        }
+        return ajax.get("/api/inputs/statistic/month?year=" + year, headers)
+    }
+
+    getYearTypeStatisticsData(year) {
+        let headers = {
+            "Content-Type" : "application/json;charset=UTF-8",
+            "X-AUTH-TOKEN" : token.methods.getToken()
+        }
+        return ajax.get("/api/inputs/statistic/type?year=" + year, headers)
+    }
 }

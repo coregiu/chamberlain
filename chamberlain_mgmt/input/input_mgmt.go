@@ -129,7 +129,7 @@ func (input *Input) GetStatisticsByMonth(year uint16) ([]Input, error) {
 	}
 	inputs := make([]Input, 0)
 	var result *gorm.DB
-	result = db.Raw("SELECT MONTH, SUM(ALL_INPUT) ALL_INPUT, SUM(TAX) TAX, SUM(ACTUAL) ACTUAL FROM INPUTS WHERE YEAR = ? GROUP BY MONTH", year).Scan(&inputs)
+	result = db.Raw("SELECT MONTH, SUM(ALL_INPUT) ALL_INPUT, SUM(TAX) TAX, SUM(ACTUAL) ACTUAL FROM INPUTS WHERE YEAR = ? GROUP BY MONTH ORDER BY MONTH", year).Scan(&inputs)
 	return inputs, result.Error
 }
 
@@ -141,7 +141,7 @@ func (input *Input) GetStatisticsByType(year uint16) ([]Input, error) {
 	}
 	inputs := make([]Input, 0)
 	var result *gorm.DB
-	result = db.Raw("SELECT TYPE, SUM(ALL_INPUT) ALL_INPUT, SUM(TAX) TAX, SUM(ACTUAL) ACTUAL FROM INPUTS WHERE YEAR = ? GROUP BY TYPE", year).Scan(&inputs)
+	result = db.Raw("SELECT TYPE, SUM(ALL_INPUT) ALL_INPUT, SUM(TAX) TAX, SUM(ACTUAL) ACTUAL FROM INPUTS WHERE YEAR = ? GROUP BY TYPE ORDER BY TYPE", year).Scan(&inputs)
 
 	return inputs, result.Error
 }
@@ -154,10 +154,10 @@ func (input *Input) GetsStatisticsByYear(year uint16) ([]Input, error) {
 	}
 	inputs := make([]Input, 0)
 	var result *gorm.DB
-	if year > 0 {
-		result = db.Raw("SELECT YEAR, SUM(ALL_INPUT) ALL_INPUT, SUM(TAX) TAX, SUM(ACTUAL) ACTUAL FROM INPUTS GROUP BY YEAR").Scan(&inputs)
+	if year == 0 {
+		result = db.Raw("SELECT YEAR, SUM(ALL_INPUT) ALL_INPUT, SUM(TAX) TAX, SUM(ACTUAL) ACTUAL FROM INPUTS GROUP BY YEAR ORDER BY YEAR").Scan(&inputs)
 	} else {
-		result = db.Raw("SELECT YEAR, SUM(ALL_INPUT) ALL_INPUT, SUM(TAX) TAX, SUM(ACTUAL) ACTUAL FROM INPUTS WHERE YEAR = ?", year).Scan(&inputs)
+		result = db.Raw("SELECT YEAR, SUM(ALL_INPUT) ALL_INPUT, SUM(TAX) TAX, SUM(ACTUAL) ACTUAL FROM INPUTS WHERE YEAR = ? ORDER BY YEAR", year).Scan(&inputs)
 	}
 
 	return inputs, result.Error

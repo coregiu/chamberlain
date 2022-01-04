@@ -33,10 +33,10 @@ export default {
 <style>
 #user_info {
   position: relative;
-  top: 15%;
+  top: 10%;
   width: 50%;
   text-align: left;
   margin: 0 auto;
-  padding-left: 300px;
+  padding-left: 320px;
 }
 </style>

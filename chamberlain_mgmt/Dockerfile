@@ -10,7 +10,7 @@ RUN go mod download &&\
     rm -rf /opt/chamberlain/chamberlain_mgmt /opt/chamberlain/chamberlain_mgmt.go
 
 #FROM scratch as runner
-FROM ubuntu:latest as runner
+FROM scratch as runner
 COPY --from=builder /opt/chamberlain/chamberlain* /
 EXPOSE 8080
 CMD ["/chamberlain"]
