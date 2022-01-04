@@ -68,7 +68,9 @@
           <RadioButton id="category2" name="category" value="award" v-model="inputInfo.Type"/>
           <label for="category2">资金</label>&nbsp;&nbsp;&nbsp;&nbsp;
           <RadioButton id="category3" name="category" value="dividends" v-model="inputInfo.Type"/>
-          <label for="category2">分红</label>
+          <label for="category2">分红</label>&nbsp;&nbsp;&nbsp;&nbsp;
+          <RadioButton id="category4" name="category" value="other" v-model="inputInfo.Type"/>
+          <label for="category2">其他</label>
         </div>
       </div>
       <small class="p-invalid" v-if="submitted && !inputInfo.Type">**收入类型必须填写**</small>
