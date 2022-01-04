@@ -37,7 +37,7 @@ type InputMgmt interface {
 	GetsStatisticsByYear([]Input, error)
 }
 
-func (Input) TableName() string  {
+func (Input) TableName() string {
 	return "INPUTS"
 }
 
@@ -48,13 +48,7 @@ func (input *Input) AddInput() error {
 		return errors.New("database connection is nil")
 	}
 	result := db.Create(&input)
-	if result.Error != nil {
-		return result.Error
-	}
-	if result.RowsAffected == 0 {
-		return errors.New("failed to insert input:" + fmt.Sprint(input.InputTime))
-	}
-	return nil
+	return result.Error
 }
 
 func (input Input) BatchAddInput(inputs *[]Input) error {
@@ -64,10 +58,7 @@ func (input Input) BatchAddInput(inputs *[]Input) error {
 		return errors.New("database connection is nil")
 	}
 	result := db.CreateInBatches(inputs, len(*inputs))
-	if result.Error != nil {
-		return result.Error
-	}
-	return nil
+	return result.Error
 }
 
 func (input *Input) UpdateInput() error {
@@ -83,10 +74,7 @@ func (input *Input) UpdateInput() error {
 		Update("TAX", input.Tax).
 		Update("ACTUAL", input.Actual).
 		Update("DESCRIPTION", input.Description)
-	if result.Error != nil {
-		return result.Error
-	}
-	return nil
+	return result.Error
 }
 
 func (input *Input) DeleteInput() error {
@@ -96,13 +84,7 @@ func (input *Input) DeleteInput() error {
 		return errors.New("database connection is nil")
 	}
 	result := db.Delete(&Input{}, "INPUT_TIME = ?", input.InputTime)
-	if result.Error != nil {
-		return result.Error
-	}
-	if result.RowsAffected == 0 {
-		return errors.New("failed to delete input:" + fmt.Sprint(input.InputTime))
-	}
-	return nil
+	return result.Error
 }
 
 func (input *Input) GetInputs(year uint16, month uint8, limit int, offset int) ([]Input, error) {
@@ -113,16 +95,11 @@ func (input *Input) GetInputs(year uint16, month uint8, limit int, offset int) (
 	}
 	inputs := make([]Input, 0)
 	if year > 0 {
-		db = db.Model(&input).Where("YEAR = ?", year)
+		result := db.Raw("SELECT INPUT_TIME, YEAR, MONTH, TYPE, ROUND(ALL_INPUT, 2) ALL_INPUT, ROUND(TAX, 2) TAX, ROUND(ACTUAL, 2) ACTUAL, BASE, DESCRIPTION FROM INPUTS WHERE YEAR = ? ORDER BY INPUT_TIME DESC", year).Scan(&inputs)
+		return inputs, result.Error
 	}
-	if month > 0 {
-		db = db.Model(&input).Where("MONTH = ?", month)
-	}
-	result := db.Order("INPUT_TIME DESC").Limit(limit).Offset(offset).Find(&inputs)
-	if result.Error != nil {
-		return nil, result.Error
-	}
-	return inputs, nil
+	result := db.Raw("SELECT INPUT_TIME, YEAR, MONTH, TYPE, ROUND(ALL_INPUT, 2) ALL_INPUT, ROUND(TAX, 2) TAX, ROUND(ACTUAL, 2) ACTUAL, BASE, DESCRIPTION FROM INPUTS ORDER BY INPUT_TIME DESC", year).Scan(&inputs)
+	return inputs, result.Error
 }
 
 func (input *Input) GetInputsCount(year uint16, month uint8) (int64, error) {
@@ -140,14 +117,8 @@ func (input *Input) GetInputsCount(year uint16, month uint8) (int64, error) {
 		db = db.Where("MONTH = ?", month)
 	}
 	result := db.Count(&count)
-	if result.Error != nil {
-		return 0, result.Error
-	}
-	if result.RowsAffected == 0 {
-		return 0, errors.New("failed to get input")
-	}
 	log.Debug("count is %d", fmt.Sprint(count))
-	return count, nil
+	return count, result.Error
 }
 
 func (input *Input) GetStatisticsByMonth(year uint16) ([]Input, error) {
@@ -158,15 +129,8 @@ func (input *Input) GetStatisticsByMonth(year uint16) ([]Input, error) {
 	}
 	inputs := make([]Input, 0)
 	var result *gorm.DB
-	result = db.Raw("SELECT YEAR, MONTH, SUM(ALL_INPUT) ALL_INPUT, SUM(TAX) TAX, SUM(ACTUAL) ACTUAL FROM INPUTS WHERE YEAR = ? GROUP BY YEAR, MONTH", year).Scan(&inputs)
-	if result.Error != nil {
-		return nil, result.Error
-	}
-	if result.RowsAffected == 0 {
-		log.Warn("no result go get.")
-		return nil, errors.New("failed to get input")
-	}
-	return inputs, nil
+	result = db.Raw("SELECT MONTH, SUM(ALL_INPUT) ALL_INPUT, SUM(TAX) TAX, SUM(ACTUAL) ACTUAL FROM INPUTS WHERE YEAR = ? GROUP BY MONTH", year).Scan(&inputs)
+	return inputs, result.Error
 }
 
 func (input *Input) GetStatisticsByType(year uint16) ([]Input, error) {
@@ -177,15 +141,9 @@ func (input *Input) GetStatisticsByType(year uint16) ([]Input, error) {
 	}
 	inputs := make([]Input, 0)
 	var result *gorm.DB
-	result = db.Raw("SELECT YEAR, TYPE, SUM(ALL_INPUT) ALL_INPUT, SUM(TAX) TAX, SUM(ACTUAL) ACTUAL FROM INPUTS WHERE YEAR = ? GROUP BY YEAR, TYPE", year).Scan(&inputs)
+	result = db.Raw("SELECT TYPE, SUM(ALL_INPUT) ALL_INPUT, SUM(TAX) TAX, SUM(ACTUAL) ACTUAL FROM INPUTS WHERE YEAR = ? GROUP BY TYPE", year).Scan(&inputs)
 
-	if result.Error != nil {
-		return nil, result.Error
-	}
-	if result.RowsAffected == 0 {
-		return nil, errors.New("failed to get input")
-	}
-	return inputs, nil
+	return inputs, result.Error
 }
 
 func (input *Input) GetsStatisticsByYear(year uint16) ([]Input, error) {
@@ -202,11 +160,5 @@ func (input *Input) GetsStatisticsByYear(year uint16) ([]Input, error) {
 		result = db.Raw("SELECT YEAR, SUM(ALL_INPUT) ALL_INPUT, SUM(TAX) TAX, SUM(ACTUAL) ACTUAL FROM INPUTS WHERE YEAR = ?", year).Scan(&inputs)
 	}
 
-	if result.Error != nil {
-		return nil, result.Error
-	}
-	if result.RowsAffected == 0 {
-		return nil, errors.New("failed to get input")
-	}
-	return inputs, nil
+	return inputs, result.Error
 }

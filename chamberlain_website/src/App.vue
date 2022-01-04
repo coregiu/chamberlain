@@ -26,6 +26,7 @@
         let tokenValid = await this.$token.methods.checkChamberlainToken()
         if (!tokenValid) {
           this.$token.methods.clearChamberlainToken()
+          this.$router.push("/login");
         }
         this.$menu.methods.setMenuTop()
       }
