@@ -11,7 +11,7 @@
       <div>
         <div style="float:left">系统操作日志列表</div>
         <div style="float:right">
-          <Button type="button" class="p-button-secondary" @click="openDeleteSyslogDialog">删除</Button>&nbsp;&nbsp;&nbsp;&nbsp;
+          <Button type="button" class="p-button-secondary" @click="openDeleteSyslogDialog">批量删除</Button>&nbsp;&nbsp;&nbsp;&nbsp;
           <span class="p-input-icon-left">
               <i class="pi pi-search"/>
               <InputText v-model="username" placeholder="操作人" @keyup.enter.native="queryByCondition"/>
@@ -43,6 +43,7 @@
     <div class="confirmation-content">
       <i class="pi pi-exclamation-triangle p-mr-3" style="font-size: 2rem"/>
       <span v-if="selectedLogIds">你确认要删除这些日志吗?</span>
+      <span v-if="!selectedLogIds">请先选择要删除的日志！</span>
     </div>
     <template #footer>
       <Button label="否" icon="pi pi-times" class="p-button-text" @click="isDeleteInputDialogOpen = false"/>
@@ -88,7 +89,9 @@ export default {
 
     async deleteSyslog() {
       this.isDeleteInputDialogOpen = false
-      console.log(this.selectedLogIds)
+      if (!this.selectedLogIds || length(this.selectedLogIds) === 0) {
+        return
+      }
       let res = await this.syslogService.deleteSyslog(this.selectedLogIds)
       if ((typeof res == "string") && (res.indexOf("err:") === 0)) {
         this.tipDisplay = true;
