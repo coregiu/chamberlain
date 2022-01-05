@@ -7,7 +7,7 @@ export default class SyslogService {
             "Content-Type": "application/json;charset=UTF-8",
             "X-AUTH-TOKEN": token.methods.getToken()
         }
-        return ajax.get("/api/syslog?username=" + username + "&operation=" + operation + "&limit=" + limit + "&offset=" + offset, headers)
+        return ajax.get("/api/syslogs?username=" + username + "&operation=" + operation + "&limit=" + limit + "&offset=" + offset, headers)
     }
 
     deleteSyslog(syslogs) {
@@ -16,6 +16,6 @@ export default class SyslogService {
             "X-AUTH-TOKEN": token.methods.getToken()
         }
         let data = JSON.stringify(syslogs);
-        return ajax.delete("/api/syslog", headers, data)
+        return ajax.delete("/api/syslogs", headers, data)
     }
 }

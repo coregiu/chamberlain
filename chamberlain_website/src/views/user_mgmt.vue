@@ -60,9 +60,9 @@
       <label class="p-mb-3">角色:</label>
       <div class="p-formgrid p-grid">
         <div class="p-field-radiobutton p-col-6">
-          <RadioButton id="category1" name="category" value="admin" v-model="userInfo.Role"/>
+          <RadioButton id="category1" name="category" value="admin" v-model="userInfo.Role" :class="{'p-invalid': submitted && !userInfo.Role}"/>
           <label for="category1">管理员</label>&nbsp;&nbsp;&nbsp;&nbsp;
-          <RadioButton id="category2" name="category" value="user" v-model="userInfo.Role"/>
+          <RadioButton id="category2" name="category" value="user" v-model="userInfo.Role" :class="{'p-invalid': submitted && !userInfo.Role}"/>
           <label for="category2">普通用户</label>
         </div>
       </div>

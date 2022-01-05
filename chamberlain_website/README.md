@@ -20,8 +20,5 @@ podman run -d --name regiu --pod giu swr.cn-east-3.myhuaweicloud.com/coregiu/reg
 ```
 
 TODO:
-- 3 记事本／个人待办
-- 4 日志
 - 5 定制主页
-- 6 备份恢复
 - 7 手机版

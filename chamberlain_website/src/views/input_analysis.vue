@@ -2,7 +2,7 @@
   <div id="YearStatistics" class="panel-chart">
     <span>
       年度收入统计:<br>
-      <Dropdown v-model="currentYearObject" :options="yearOptions" optionLabel="name" :placeholder="currentYearObject.code" @change="changeYear"/>
+      <Dropdown v-model="currentYearObject" :options="yearOptions" optionLabel="name" :placeholder="currentYearObject.name" @change="changeYear"/>
     </span>
     <Chart type="pie" :data="yearTypeStatisticsData" class="inner-panel-chart" :height="394" :width="394"/>&nbsp;&nbsp;
     <Chart type="bar" :data="yearMonthStatisticsData" class="inner-panel-chart" :height="394" :width="1200"/>

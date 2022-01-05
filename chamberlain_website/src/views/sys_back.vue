@@ -1,7 +1,7 @@
 <template>
-  <div class="user-info-div">
-    <span style="font-size:28px;"><p><b>结论： 系统当前运行状态良好</b></p></span>
-    <table class="user-info-table">
+  <div class="system-info-div">
+    <span style="font-size:28px;color: blue"><p><b>结论： 系统当前运行状态良好</b></p></span>
+    <table class="system-info-table">
       <tr>
         <td align="right"><p><b>剩余磁盘空间:</b></p></td>
         <td align="left"><p><b> {{ diskRemain }}</b></p></td>
@@ -47,13 +47,14 @@ export default {
 </script>
 
 <style>
-.user-info-div{
+.system-info-div{
   position: relative;
   top:10%;
 }
-.user-info-table {
+.system-info-table {
   text-align: center;
   margin:0 auto;
   font-size:20px;
+  color: #42A5F5;
 }
 </style>

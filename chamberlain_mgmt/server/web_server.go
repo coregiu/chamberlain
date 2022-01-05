@@ -47,9 +47,17 @@ func apiRoute(router *gin.Engine) {
 		blogsIndex.POST("", BlogsHandler())
 	}
 
-	syslogIndex := router.Group("/syslog", AuthHandler())
+	syslogIndex := router.Group("/syslogs", AuthHandler())
 	{
 		syslogIndex.GET("", QuerySyslogHandler())
 		syslogIndex.DELETE("", DeleteSyslogHandler(), RecordLogHandler())
+	}
+
+	notebookIndex := router.Group("/notebooks", AuthHandler())
+	{
+		notebookIndex.GET("", GetNotebooksHandler())
+		notebookIndex.DELETE("", DeleteNotebookHandler(), RecordLogHandler())
+		notebookIndex.POST("", AddNotebookHandler(), RecordLogHandler())
+		notebookIndex.PUT("", UpdateNotebookHandler(), RecordLogHandler())
 	}
 }
