@@ -26,7 +26,7 @@ CREATE TABLE LOGS
 (
     LOG_ID       bigint primary key,
     USERNAME     varchar(16),
-    OPERATION    varchar(32),
+    OPERATION    varchar(64),
     OP_TIME      timestamp,
     OP_RESULT    varchar(16),
     DESCRIPTION  varchar(512)

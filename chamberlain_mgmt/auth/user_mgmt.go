@@ -35,13 +35,7 @@ func (user *User) Adduser() error {
 		return errors.New("database connection is nil")
 	}
 	result := db.Create(&user)
-	if result.Error != nil {
-		return result.Error
-	}
-	if result.RowsAffected == 0 {
-		return errors.New("There is no user named " + user.Username)
-	}
-	return nil
+	return result.Error
 }
 
 func (user *User) UpdateUser() error {
@@ -51,12 +45,8 @@ func (user *User) UpdateUser() error {
 		return errors.New("database connection is nil")
 	}
 	result := db.Model(&User{}).Where("USERNAME = ?", user.Username).Update("ROLE", user.Role).Update("PASSWORD", user.Password)
-	if result.Error != nil {
-		log.Error(result.Error.Error())
-		return result.Error
-	}
 
-	return nil
+	return result.Error
 }
 
 func (user *User) DeleteUser() error {
@@ -66,13 +56,7 @@ func (user *User) DeleteUser() error {
 		return errors.New("database connection is nil")
 	}
 	result := db.Delete(&user, "USERNAME = ?", user.Username)
-	if result.Error != nil {
-		return result.Error
-	}
-	if result.RowsAffected == 0 {
-		return errors.New("There is no user named " + user.Username)
-	}
-	return nil
+	return result.Error
 }
 
 func (user *User) GetUser() error {
@@ -82,13 +66,7 @@ func (user *User) GetUser() error {
 		return errors.New("database connection is nil")
 	}
 	result := db.Select("USERNAME", "ROLE").Find(&user, "USERNAME = ?", user.Username)
-	if result.Error != nil {
-		return result.Error
-	}
-	if result.RowsAffected == 0 {
-		return errors.New("There is no user named " + user.Username)
-	}
-	return nil
+	return result.Error
 }
 
 func (user *User) GetUsersCount() (int64, error) {
@@ -99,13 +77,7 @@ func (user *User) GetUsersCount() (int64, error) {
 	}
 	var count int64
 	result := db.Model(&user).Count(&count)
-	if result.Error != nil {
-		return 0, result.Error
-	}
-	if result.RowsAffected == 0 {
-		return 0, errors.New("There is no user named " + user.Username)
-	}
-	return count, nil
+	return count, result.Error
 }
 
 func (user *User) GetUsers(offset int, limit int) ([]User, error) {
@@ -116,13 +88,7 @@ func (user *User) GetUsers(offset int, limit int) ([]User, error) {
 	}
 	users := make([]User, 0)
 	result := db.Select("USERNAME", "ROLE").Limit(limit).Offset(offset).Find(&users)
-	if result.Error != nil {
-		return nil, result.Error
-	}
-	if result.RowsAffected == 0 {
-		return nil, errors.New("There is no user named " + user.Username)
-	}
-	return users, nil
+	return users, result.Error
 }
 
 func (user *User) CheckAuth() (bool, error) {
@@ -132,13 +98,13 @@ func (user *User) CheckAuth() (bool, error) {
 		return false, errors.New("database connection is nil")
 	}
 	result := db.Select("USERNAME", "ROLE").Find(&user, "USERNAME = ? AND PASSWORD = ?", user.Username, user.Password)
+	log.Info("username %s's role is %s", user.Username, user.Role)
 	if result.Error != nil {
 		return false, result.Error
 	}
 	if result.RowsAffected == 0 {
 		return false, errors.New("username or password is not right")
 	}
-	log.Info("username %s's role is %s", user.Username, user.Role)
 	return true, nil
 }
 
@@ -150,9 +116,5 @@ func (user *User) ResetPassword() error {
 	}
 	user.Password = user.NewPassword
 	err = user.UpdateUser()
-	if err != nil {
-		log.Warn("failed to update password")
-		return err
-	}
-	return nil
+	return err
 }

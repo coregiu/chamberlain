@@ -198,6 +198,7 @@ func LoginHandler() gin.HandlerFunc {
 				context.JSON(200, token)
 			}
 		}
+		context.Writer.Header().Set("USERNAME", user.Username)
 	}
 }
 
@@ -212,9 +213,11 @@ func LogoutHandler() gin.HandlerFunc {
 		}
 		token := &auth.Token{}
 		token.TokenId = tokenId
+		token, _ = token.GetToken()
 		token.DeleteToken()
 		context.JSON(200, gin.H{
 			"result": "logout successfully",
 		})
+		context.Writer.Header().Set("USERNAME", token.User.Username)
 	}
 }

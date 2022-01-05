@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 	"testing"
+	"time"
 )
 
 func TestToken_Should_Successfully_When_GetToken(t *testing.T) {
@@ -51,4 +52,10 @@ func TestToken_Should_Successfully_When_CreateToken(t *testing.T) {
 	if strings.Compare(jsonStr, "admin") == -1 {
 		t.Error("failed go get user by token")
 	}
+}
+
+func TestToken_Should_Successfully_When_CreateTokenss(t *testing.T) {
+
+	fmt.Println(time.Now().Unix())
+	fmt.Println(time.Now().UnixNano())
 }

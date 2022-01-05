@@ -12,10 +12,10 @@ import (
 var logLevel int
 
 var (
-	debug   *log.Logger
-	info    *log.Logger
-	warning *log.Logger
-	errors  *log.Logger
+	debug      *log.Logger
+	info       *log.Logger
+	warning    *log.Logger
+	errorLevel *log.Logger
 )
 
 func init() {
@@ -31,7 +31,7 @@ func init() {
 	debug = log.New(io.MultiWriter(os.Stdout, logFile), "Info:", log.Ldate|log.Ltime)
 	info = log.New(io.MultiWriter(os.Stderr, logFile), "Info:", log.Ldate|log.Ltime)
 	warning = log.New(io.MultiWriter(os.Stdout, logFile), "Warning:", log.Ldate|log.Ltime)
-	errors = log.New(io.MultiWriter(os.Stderr, logFile), "Error:", log.Ldate|log.Ltime)
+	errorLevel = log.New(io.MultiWriter(os.Stderr, logFile), "Error:", log.Ldate|log.Ltime)
 }
 
 func Debug(printFormat string, printParams ...interface{}) {
@@ -54,7 +54,7 @@ func Warn(printFormat string, printParams ...interface{}) {
 
 func Error(printFormat string, printParams ...interface{}) {
 	if logLevel <= config.ErrorLevel {
-		errors.Printf(printCallerName()+printFormat, printParams)
+		errorLevel.Printf(printCallerName()+printFormat, printParams)
 	}
 }
 

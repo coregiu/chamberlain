@@ -19,21 +19,22 @@ func StartServer() {
 func apiRoute(router *gin.Engine) {
 	userIndex := router.Group("/users", AuthHandler())
 	{
-		userIndex.POST("", AddUserHandler())
-		userIndex.PUT("", UpdateUserHandler())
-		userIndex.DELETE("", DeleteUserHandler())
+		userIndex.POST("", AddUserHandler(), RecordLogHandler())
+		userIndex.PUT("", UpdateUserHandler(), RecordLogHandler())
+		userIndex.DELETE("", DeleteUserHandler(), RecordLogHandler())
 		userIndex.GET("", GetUsersHandler())
 		userIndex.GET("/count", GetUsersCountHandler())
 		userIndex.GET("/token", GetUserByTokenHandler())
-		userIndex.PUT("/password", RestPasswordHandler())
-		userIndex.POST("/login", LoginHandler())
-		userIndex.POST("/logout", LogoutHandler())
+		userIndex.PUT("/password", RestPasswordHandler(), RecordLogHandler())
+		userIndex.POST("/login", LoginHandler(), RecordLogHandler())
+		userIndex.POST("/logout", LogoutHandler(), RecordLogHandler())
 	}
+
 	inputIndex := router.Group("/inputs", AuthHandler())
 	{
-		inputIndex.POST("", AddInputHandler())
-		inputIndex.PUT("", UpdateInputHandler())
-		inputIndex.DELETE("", DeleteInputHandler())
+		inputIndex.POST("", AddInputHandler(), RecordLogHandler())
+		inputIndex.PUT("", UpdateInputHandler(), RecordLogHandler())
+		inputIndex.DELETE("", DeleteInputHandler(), RecordLogHandler())
 		inputIndex.GET("", GetInputsHandler())
 		inputIndex.GET("/count", GetInputsCountHandler())
 		inputIndex.GET("/statistic", GetStatisticHandler())
@@ -43,5 +44,9 @@ func apiRoute(router *gin.Engine) {
 	blogsIndex := router.Group("/blogs", AuthHandler())
 	{
 		blogsIndex.POST("", BlogsHandler())
+	}
+	syslogIndex := router.Group("/syslog", AuthHandler())
+	{
+		syslogIndex.GET("", SyslogHandler())
 	}
 }
