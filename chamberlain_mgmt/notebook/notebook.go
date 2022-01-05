@@ -118,7 +118,7 @@ func (notebook *Notebook) GetNotebooks(finishTime time.Time, status string, limi
 	if status != "" {
 		dataSet.Where("STATUS=?", status)
 	}
-	result := dataSet.Limit(limit).Offset(offset).Order("FINISH_TIME ASC, STATUS DESC, LEVEL ASC").Find(&syslogs)
+	result := dataSet.Limit(limit).Offset(offset).Order("STATUS DESC, FINISH_TIME ASC, LEVEL ASC").Find(&syslogs)
 	return syslogs, result.Error
 }
 

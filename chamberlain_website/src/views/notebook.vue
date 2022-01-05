@@ -32,7 +32,7 @@
 
       <Column header="开始时间" field="NoteTime" :sortable="true" sortField="NoteTime">
         <template #body="noteData">
-          <span class="image-text">{{this.formatDate(noteData.data.NoteTime)}}</span>
+          <span class="image-text">{{ this.formatDate(noteData.data.NoteTime) }}</span>
         </template>
       </Column>
       <Column field="Content" header="内容" :sortable="true" sortField="Content"/>
@@ -40,12 +40,12 @@
       <Column field="Status" header="状态" :sortable="true" sortField="Status"/>
       <Column field="FinishTime" header="计划完成时间" :sortable="true" sortField="FinishTime">
         <template #body="noteData">
-          <span class="image-text">{{this.formatDate(noteData.data.FinishTime)}}</span>
+          <span class="image-text">{{ this.formatDate(noteData.data.FinishTime) }}</span>
         </template>
       </Column>
       <Column field="RealFinishTime" header="实际完成时间" :sortable="true" sortField="RealFinishTime">
         <template #body="noteData">
-          <span class="image-text">{{formatRealFinishDate(noteData.data.Status, noteData.data.RealFinishTime)}}</span>
+          <span class="image-text">{{ formatRealFinishDate(noteData.data.Status, noteData.data.RealFinishTime) }}</span>
         </template>
       </Column>
       <Column header="操作" headerStyle="width: 8rem; text-align: center"
@@ -174,12 +174,14 @@ export default {
       this.isNewNotebookDialogOpen = false;
       this.submitted = false;
     },
+
     async saveNotebook() {
       this.submitted = true;
       if (this.isAddOperation) {
         this.notebookInfo.NoteId = this.getUuid()
         this.notebookInfo.NoteTime = new Date()
         this.notebookInfo.Status = "NEW"
+        this.notebookInfo.RealFinishTime = new Date(this.notebookInfo.FinishTime.getFullYear() + 1, this.notebookInfo.FinishTime.getMonth() + 1, this.notebookInfo.FinishTime.getDate(), 23, 59, 59)
       }
 
       if (!this.notebookInfo.Content
@@ -187,11 +189,11 @@ export default {
           || !this.notebookInfo.Level) {
         return
       }
-      this.notebookInfo.FinishTime.setHours(23)
-      this.notebookInfo.FinishTime.setMinutes(59)
-      this.notebookInfo.FinishTime.setSeconds(59)
-      this.notebookInfo.RealFinishTime = new Date(this.notebookInfo.FinishTime.getFullYear() + 1, this.notebookInfo.FinishTime.getMonth() + 1, this.notebookInfo.FinishTime.getDate(), 23, 59, 59);
-      console.log(this.notebookInfo)
+
+      if (this.notebookInfo.Status === "CLOSED") {
+        this.notebookInfo.RealFinishTime = new Date()
+      }
+
       let res = ""
       if (this.isAddOperation) {
         res = await this.notebookService.addNotebook(this.notebookInfo);
@@ -255,7 +257,7 @@ export default {
       return year + '-' + month + '-' + day
     },
     formatRealFinishDate(status, realFinishTIme) {
-      if (status === 'closed') {
+      if (status === 'CLOSED') {
         return this.formatDate(realFinishTIme)
       } else {
         return ""
