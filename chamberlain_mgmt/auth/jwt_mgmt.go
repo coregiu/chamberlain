@@ -33,6 +33,7 @@ func init() {
 	authMap["/users/logout"] = "all"
 
 	authMap["/inputs"] = "admin"
+	authMap["/syslog"] = "admin"
 	authMap["/inputs/count"] = "admin"
 	authMap["/inputs/statistic"] = "admin"
 	authMap["/inputs/statistic/month"] = "admin"

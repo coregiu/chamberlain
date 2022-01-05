@@ -3,11 +3,12 @@ package server
 import (
 	"chamberlain_mgmt/auth"
 	"chamberlain_mgmt/log"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"strconv"
 )
 
-func SyslogHandler() gin.HandlerFunc {
+func QuerySyslogHandler() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		username, _ := context.GetQuery("username")
 		operation, _ := context.GetQuery("operation")
@@ -17,11 +18,33 @@ func SyslogHandler() gin.HandlerFunc {
 		offsetInt, _ := strconv.Atoi(offset)
 
 		syslog := new(log.SysLog)
-		syslogs, err := syslog.GetSyslog(username, operation, offsetInt, limitInt)
+		syslogs, err := syslog.GetSyslog(username, operation, limitInt, offsetInt)
 		if err != nil {
 			context.String(500, err.Error())
 		} else {
 			context.JSON(200, syslogs)
+		}
+	}
+}
+
+func DeleteSyslogHandler() gin.HandlerFunc {
+	return func(context *gin.Context) {
+		syslog := &log.SysLog{}
+		syslogs := make([]log.SysLog, 0)
+		err := context.BindJSON(&syslogs)
+		if err != nil {
+			log.Error(err.Error())
+			context.String(500, err.Error())
+			return
+		}
+		log.Debug("syslog length =%s", fmt.Sprint(len(syslogs)))
+		err = syslog.DeleteSyslog(&syslogs)
+		if err != nil {
+			context.String(500, err.Error())
+		} else {
+			context.JSON(200, gin.H{
+				"result": "Delete syslogs successfully.",
+			})
 		}
 	}
 }

@@ -21,7 +21,7 @@ type SysLogMgmt interface {
 	AddSyslog() error
 	BatchAddSyslog(inputs *[]SysLog) error
 	UpdateSyslog() error
-	DeleteSyslog() error
+	DeleteSyslog(syslogs *[]SysLog) error
 	/*Get details*/
 	GetSyslog(username string, operation string, limit int, offset int) ([]SysLog, error)
 	/*Get count*/
@@ -76,13 +76,22 @@ func (syslog *SysLog) UpdateSyslog() error {
 	return result.Error
 }
 
-func (syslog *SysLog) DeleteSyslog() error {
+func (syslog *SysLog) DeleteSyslog(syslogs *[]SysLog) error {
 	db := config.GetDbConnection()
 	if db == nil {
 		Error("Db connection is nil")
 		return errors.New("database connection is nil")
 	}
-	result := db.Delete(&SysLog{}, "LOG_ID = ?", syslog.LogId)
+	if syslogs == nil || len(*syslogs) == 0{
+		Warn("no logs to delete")
+		return nil
+	}
+	var selectIds []int64
+	for _, log := range *syslogs {
+		selectIds = append(selectIds, log.LogId)
+	}
+
+	result := db.Delete(&SysLog{}, "LOG_ID IN (?)", selectIds)
 	return result.Error
 }
 
@@ -93,7 +102,7 @@ func (syslog *SysLog) GetSyslog(username string, operation string, limit int, of
 		return nil, errors.New("database connection is nil")
 	}
 	syslogs := make([]SysLog, 0)
-	dataSet := db.Select("USERNAME", "ROLE")
+	dataSet := db.Model(&syslogs)
 	if username != "" {
 		dataSet.Where("USERNAME=?", username)
 	}
@@ -111,7 +120,7 @@ func (syslog *SysLog) GetSyslogCount(username string, operation string) (int64, 
 		return 0, errors.New("database connection is nil")
 	}
 	var count int64
-	dataSet := db.Select("USERNAME", "ROLE")
+	dataSet := db.Model(&count)
 	if username != "" {
 		dataSet.Where("USERNAME=?", username)
 	}
