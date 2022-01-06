@@ -27,7 +27,7 @@ type NotebookMgmt interface {
 	UpdateNotebook() error
 	DeleteNotebook() error
 	/*Get details*/
-	GetNotebooks(finishTime string, status string, limit int, offset int) ([]Notebook, error)
+	GetNotebooks(finishTime string, limit int, offset int) ([]Notebook, error)
 }
 
 func (Notebook) TableName() string {
@@ -93,7 +93,7 @@ func (notebook *Notebook) UpdateNotebook() error {
 		}
 	}
 	if notebook.Owner != "" {
-		result := dataSet.Update("OWNER", notebook.Level)
+		result := dataSet.Update("OWNER", notebook.Owner)
 		if result.Error != nil {
 			return result.Error
 		}
@@ -111,7 +111,7 @@ func (notebook *Notebook) DeleteNotebook() error {
 	return result.Error
 }
 
-func (notebook *Notebook) GetNotebooks(finishTime string, status string, limit int, offset int) ([]Notebook, error) {
+func (notebook *Notebook) GetNotebooks(finishTime string, limit int, offset int) ([]Notebook, error) {
 	db := config.GetDbConnection()
 	if db == nil {
 		log.Error("Db connection is nil")
@@ -119,14 +119,16 @@ func (notebook *Notebook) GetNotebooks(finishTime string, status string, limit i
 	}
 	syslogs := make([]Notebook, 0)
 	dataSet := db.Model(&syslogs)
-	if finishTime != "" && status != "" {
-		statusArr := strings.Split(status, ",")
-		dataSet.Where("DATE_FORMAT(FINISH_TIME,'%Y%m%d')=? AND STATUS IN (?)", finishTime, statusArr)
-	} else if status != "" {
-		statusArr := strings.Split(status, ",")
-		dataSet.Where("STATUS IN (?)", statusArr)
+	if finishTime != "" && notebook.Status != "" {
+		statusArr := strings.Split(notebook.Status, ",")
+		dataSet.Where("DATE_FORMAT(FINISH_TIME,'%Y%m%d')=? AND STATUS IN (?) AND USERNAME = ?", finishTime, statusArr, notebook.Username)
+	} else if notebook.Status != "" {
+		statusArr := strings.Split(notebook.Status, ",")
+		dataSet.Where("STATUS IN (?) AND USERNAME = ?", statusArr, notebook.Username)
 	} else if finishTime != "" {
-		dataSet.Where("DATE_FORMAT(FINISH_TIME,'%Y%m%d')=?", finishTime)
+		dataSet.Where("DATE_FORMAT(FINISH_TIME,'%Y%m%d')=? AND USERNAME = ?", finishTime, notebook.Username)
+	} else {
+		dataSet.Where("USERNAME = ?", notebook.Username)
 	}
 	result := dataSet.Limit(limit).Offset(offset).Order("STATUS DESC, FINISH_TIME ASC, LEVEL ASC").Find(&syslogs)
 	return syslogs, result.Error

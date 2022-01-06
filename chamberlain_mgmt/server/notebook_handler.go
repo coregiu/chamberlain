@@ -1,6 +1,7 @@
 package server
 
 import (
+	"chamberlain_mgmt/auth"
 	"chamberlain_mgmt/log"
 	note "chamberlain_mgmt/notebook"
 	"fmt"
@@ -18,6 +19,16 @@ func AddNotebookHandler() gin.HandlerFunc {
 			return
 		}
 		log.Debug("notebook length =%s", fmt.Sprint(len(notebooks)))
+		tokenId := context.Request.Header.Get("X-AUTH-TOKEN")
+		token := auth.Token{}
+		token.TokenId = tokenId
+		mapToken, err := token.GetToken()
+		if err == nil {
+			username := mapToken.User.Username
+			for index := range notebooks {
+				notebooks[index].Username = username
+			}
+		}
 		err = notebook.BatchAddNotebook(&notebooks)
 		if err != nil {
 			context.String(500, err.Error())
@@ -79,8 +90,19 @@ func GetNotebooksHandler() gin.HandlerFunc {
 		status, _ := context.GetQuery("status")
 		log.Info("finish time = %s, status = %s, limit = %d, offset = %d", queryFinishTime, status, limit, offset)
 
+		username := ""
+		tokenId := context.Request.Header.Get("X-AUTH-TOKEN")
+		token := auth.Token{}
+		token.TokenId = tokenId
+		mapToken, err := token.GetToken()
+		if err == nil {
+			username = mapToken.User.Username
+		}
+
 		notebook := note.Notebook{}
-		notebooks, err := notebook.GetNotebooks(queryFinishTime, status, limit, offset)
+		notebook.Username = username
+		notebook.Status = status
+		notebooks, err := notebook.GetNotebooks(queryFinishTime, limit, offset)
 		if err != nil {
 			context.String(500, err.Error())
 		} else {
