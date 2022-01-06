@@ -30,17 +30,40 @@
         正在加载数据，请稍等...
       </template>
 
-      <Column header="开始时间" field="NoteTime" :sortable="true" sortField="NoteTime">
+      <Column header="任务时间" field="NoteTime" :sortable="true" sortField="NoteTime">
         <template #body="noteData">
           <span class="image-text">{{ this.formatDate(noteData.data.NoteTime) }}</span>
         </template>
       </Column>
       <Column field="Content" header="内容" :sortable="true" sortField="Content"/>
-      <Column field="Level" header="级别" :sortable="true" sortField="Level"/>
-      <Column field="Status" header="状态" :sortable="true" sortField="Status"/>
+      <Column field="Level" header="级别" :sortable="true" sortField="Level">
+        <template #body="noteData">
+          <span style="background-color: #5d0c28; color: white; font-size: 21px"
+                v-if="noteData.data.Level === 'H'">高</span>
+          <span style="background-color: #8a6a19; color: white; font-size: 21px"
+                v-if="noteData.data.Level === 'M'">中</span>
+          <span style="background-color: #0b7ad1; color: white; font-size: 21px"
+                v-if="noteData.data.Level === 'L'">低</span>
+        </template>
+      </Column>
+      <Column field="Status" header="状态" :sortable="true" sortField="Status">
+        <template #body="noteData">
+          <span style="background-color: #8f5902; color: white; font-size: 19px" v-if="noteData.data.Status === 'NEW'">未启动</span>
+          <span style="background-color: #026da7; color: white; font-size: 19px"
+                v-if="noteData.data.Status === 'DOING'">进行中</span>
+          <span style="background-color: #4caf50; color: white; font-size: 19px"
+                v-if="noteData.data.Status === 'CLOSED'">已完成</span>
+        </template>
+      </Column>
       <Column field="FinishTime" header="计划完成时间" :sortable="true" sortField="FinishTime">
         <template #body="noteData">
-          <span class="image-text">{{ this.formatDate(noteData.data.FinishTime) }}</span>
+          <span style="background-color: #5d0c28; color: white; font-size: 17px"
+                v-if="!this.compareTodayTime(noteData.data.FinishTime, noteData.data.Status)">
+                {{this.formatDate(noteData.data.FinishTime)}}
+          </span>
+          <span class="image-text" v-if="this.compareTodayTime(noteData.data.FinishTime, noteData.data.Status)">
+            {{this.formatDate(noteData.data.FinishTime)}}
+          </span>
         </template>
       </Column>
       <Column field="RealFinishTime" header="实际完成时间" :sortable="true" sortField="RealFinishTime">
@@ -133,6 +156,7 @@
 
 <script>
 import NotebookService from '../api/notebook.ts';
+import to from "../../dist/assets/auto.esm.a9507486";
 
 export default {
   name: "notebook",
@@ -164,7 +188,11 @@ export default {
   },
   methods: {
     addNotebookDialog() {
-      this.notebookInfo = {"Level": "H", "FinishTime": new Date()}
+      let today = new Date()
+      today.setHours(0)
+      today.setMinutes(0)
+      today.setSeconds(0)
+      this.notebookInfo = {"Level": "H", "FinishTime": today}
       this.submitted = false;
       this.isNewNotebookDialogOpen = true;
       this.isAddOperation = true;
@@ -181,7 +209,7 @@ export default {
         this.notebookInfo.NoteId = this.getUuid()
         this.notebookInfo.NoteTime = new Date()
         this.notebookInfo.Status = "NEW"
-        this.notebookInfo.RealFinishTime = new Date(this.notebookInfo.FinishTime.getFullYear() + 1, this.notebookInfo.FinishTime.getMonth() + 1, this.notebookInfo.FinishTime.getDate(), 23, 59, 59)
+        this.notebookInfo.RealFinishTime = new Date(this.notebookInfo.FinishTime.getFullYear() + 1, this.notebookInfo.FinishTime.getMonth() + 1, this.notebookInfo.FinishTime.getDate(), 0, 0, 0)
       }
 
       if (!this.notebookInfo.Content
@@ -236,11 +264,6 @@ export default {
       this.$refs.notebookTable.exportCSV();
     },
 
-    changeQuery() {
-
-    },
-
-
     getUuid() {
       function S4() {
         return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
@@ -261,6 +284,30 @@ export default {
         return this.formatDate(realFinishTIme)
       } else {
         return ""
+      }
+    },
+
+    compareTodayTime(time, status) {
+      if (status === 'CLOSED') {
+        return true
+      }
+      let compareDate = new Date(time)
+      return Date.parse(compareDate) - Date.parse(new Date()) >= 0
+    },
+
+    changeQuery() {
+      if (this.currentQueryObject.code === 'today') {
+        let today = new Date()
+        let todayTime = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate()
+        this.notebookService.getNotebookList(todayTime, "", 10000, 0).then(data => this.notebookList = data);
+      } else if (this.currentQueryObject.code === 'unfin') {
+        this.notebookService.getNotebookList("", "NEW,DOING", 10000, 0).then(data => this.notebookList = data);
+      } else if (this.currentQueryObject.code === 'tounfin') {
+        let today = new Date()
+        let todayTime = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate()
+        this.notebookService.getNotebookList(todayTime, "NEW,DOING", 10000, 0).then(data => this.notebookList = data);
+      } else {
+        this.notebookService.getNotebookList("", "", 10000, 0).then(data => this.notebookList = data);
       }
     }
   }

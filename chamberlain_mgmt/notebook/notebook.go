@@ -5,6 +5,7 @@ import (
 	"chamberlain_mgmt/log"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -25,7 +26,7 @@ type NotebookMgmt interface {
 	UpdateNotebook() error
 	DeleteNotebook() error
 	/*Get details*/
-	GetNotebooks(finishTime time.Time, status string, limit int, offset int) ([]Notebook, error)
+	GetNotebooks(finishTime string, status string, limit int, offset int) ([]Notebook, error)
 }
 
 func (Notebook) TableName() string {
@@ -103,7 +104,7 @@ func (notebook *Notebook) DeleteNotebook() error {
 	return result.Error
 }
 
-func (notebook *Notebook) GetNotebooks(finishTime time.Time, status string, limit int, offset int) ([]Notebook, error) {
+func (notebook *Notebook) GetNotebooks(finishTime string, status string, limit int, offset int) ([]Notebook, error) {
 	db := config.GetDbConnection()
 	if db == nil {
 		log.Error("Db connection is nil")
@@ -111,12 +112,14 @@ func (notebook *Notebook) GetNotebooks(finishTime time.Time, status string, limi
 	}
 	syslogs := make([]Notebook, 0)
 	dataSet := db.Model(&syslogs)
-	nilTime := time.Time{}
-	if finishTime != nilTime {
-		dataSet.Where("FINISH_TIME=?", finishTime)
-	}
-	if status != "" {
-		dataSet.Where("STATUS=?", status)
+	if finishTime != "" && status != "" {
+		statusArr := strings.Split(status, ",")
+		dataSet.Where("DATE_FORMAT(FINISH_TIME,'%Y%m%d')=? AND STATUS IN (?)", finishTime, statusArr)
+	} else if status != "" {
+		statusArr := strings.Split(status, ",")
+		dataSet.Where("STATUS IN (?)", statusArr)
+	} else if finishTime != "" {
+		dataSet.Where("DATE_FORMAT(FINISH_TIME,'%Y%m%d')=?", finishTime)
 	}
 	result := dataSet.Limit(limit).Offset(offset).Order("STATUS DESC, FINISH_TIME ASC, LEVEL ASC").Find(&syslogs)
 	return syslogs, result.Error

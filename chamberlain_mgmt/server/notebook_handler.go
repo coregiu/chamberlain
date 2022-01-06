@@ -5,7 +5,6 @@ import (
 	note "chamberlain_mgmt/notebook"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"time"
 )
 
 func AddNotebookHandler() gin.HandlerFunc {
@@ -76,16 +75,12 @@ func GetNotebooksHandler() gin.HandlerFunc {
 	return func(context *gin.Context) {
 		limit := getIntParam(context, "limit", 10)
 		offset := getIntParam(context, "offset", 0)
-		queryFinishTime := getIntParam(context, "finish_time", 0)
+		queryFinishTime, _ := context.GetQuery("finish_time")
 		status, _ := context.GetQuery("status")
-		log.Info("finish time = %d, status = %s, limit = %d, offset = %d", queryFinishTime, status, limit, offset)
+		log.Info("finish time = %s, status = %s, limit = %d, offset = %d", queryFinishTime, status, limit, offset)
 
 		notebook := note.Notebook{}
-		finishTime := time.Time{}
-		if queryFinishTime > 0 {
-			finishTime = time.Unix(int64(queryFinishTime), 0)
-		}
-		notebooks, err := notebook.GetNotebooks(finishTime, status, limit, offset)
+		notebooks, err := notebook.GetNotebooks(queryFinishTime, status, limit, offset)
 		if err != nil {
 			context.String(500, err.Error())
 		} else {
