@@ -156,7 +156,6 @@
 
 <script>
 import NotebookService from '../api/notebook.ts';
-import to from "../../dist/assets/auto.esm.a9507486";
 
 export default {
   name: "notebook",

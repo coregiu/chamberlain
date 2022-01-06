@@ -89,7 +89,7 @@ export default {
 
     async deleteSyslog() {
       this.isDeleteInputDialogOpen = false
-      if (!this.selectedLogIds || length(this.selectedLogIds) === 0) {
+      if (!this.selectedLogIds || this.selectedLogIds.length === 0) {
         return
       }
       let res = await this.syslogService.deleteSyslog(this.selectedLogIds)
