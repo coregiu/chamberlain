@@ -34,7 +34,11 @@
     <Column field="LogId" header="日志ID" :sortable="true" sortField="LogId"/>
     <Column field="Username" header="操作人" :sortable="true" sortField="Username"/>
     <Column field="Operation" header="操作功能" :sortable="true" sortField="Operation"/>
-    <Column field="OpTime" header="操作时间" :sortable="true" sortField="OpTime"/>
+    <Column field="OpTime" header="操作时间" :sortable="true" sortField="OpTime">
+      <template #body="logData">
+        <span class="image-text">{{ this.formatDate(logData.data.OpTime) }}</span>
+      </template>
+    </Column>
     <Column field="OpResult" header="操作结果" :sortable="true" sortField="OpResult"/>
     <Column field="Description" header="描述" :sortable="true" sortField="Description"/>
   </DataTable>
@@ -99,6 +103,14 @@ export default {
       } else {
         location.reload()
       }
+    },
+
+    formatDate(time) {
+      let date = new Date(time)
+      let year = date.getFullYear()
+      let month = date.getMonth() + 1 //月份是从0开始的
+      let day = date.getDate()
+      return year + '-' + month + '-' + day + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds()
     }
   }
 }

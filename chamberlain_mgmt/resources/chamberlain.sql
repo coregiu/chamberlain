@@ -45,6 +45,7 @@ CREATE TABLE NOTEBOOKS
     LEVEL            char(1),
     NOTE_TIME        timestamp,
     FINISH_TIME      timestamp,
+    OWNER            varchar(32),
     REAL_FINISH_TIME timestamp,
     STATUS           varchar(8)
 );

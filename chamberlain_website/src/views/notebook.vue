@@ -66,6 +66,7 @@
           </span>
         </template>
       </Column>
+      <Column field="Owner" header="责任人" :sortable="true" sortField="Owner"/>
       <Column field="RealFinishTime" header="实际完成时间" :sortable="true" sortField="RealFinishTime">
         <template #body="noteData">
           <span class="image-text">{{ formatRealFinishDate(noteData.data.Status, noteData.data.RealFinishTime) }}</span>
@@ -87,7 +88,7 @@
           class="p-fluid">
     <div class="p-field">
       <label for="Description">待办内容:</label>
-      <Textarea id="Description" v-model.trim="notebookInfo.Content" rows="5" cols="30"
+      <Textarea id="Description" v-model.trim="notebookInfo.Content" rows="10" cols="60"
                 :class="{'p-invalid': submitted && !notebookInfo.Content}"/>
       <small class="p-invalid" v-if="submitted && !notebookInfo.Content">**待办内容必须填写**</small>
     </div>
@@ -117,6 +118,13 @@
       <small class="p-invalid" v-if="submitted && !notebookInfo.FinishTime">**计划完成时间必须填写**</small>
     </div>
     <br>
+
+    <div class="p-field">
+      <label for="Owner">责任人:</label>
+      <InputText id="Owner" v-model.trim="notebookInfo.Owner"/>
+    </div>
+    <br>
+
     <div class="p-field" v-if="!isAddOperation">
       <label class="p-mb-3">当前状态:</label>
       <div class="p-formgrid p-grid">

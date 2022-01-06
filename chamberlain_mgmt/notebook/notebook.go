@@ -14,6 +14,7 @@ type Notebook struct {
 	Username       string    `gorm:"column:USERNAME"`
 	Content        string    `gorm:"column:CONTENT"`
 	Level          string    `gorm:"column:LEVEL"`
+	Owner          string    `gorm:"column:OWNER"`
 	NoteTime       time.Time `gorm:"column:NOTE_TIME"`
 	FinishTime     time.Time `gorm:"column:FINISH_TIME"`
 	RealFinishTime time.Time `gorm:"column:REAL_FINISH_TIME"`
@@ -87,6 +88,12 @@ func (notebook *Notebook) UpdateNotebook() error {
 	}
 	if notebook.Level != "" {
 		result := dataSet.Update("LEVEL", notebook.Level)
+		if result.Error != nil {
+			return result.Error
+		}
+	}
+	if notebook.Owner != "" {
+		result := dataSet.Update("OWNER", notebook.Level)
 		if result.Error != nil {
 			return result.Error
 		}
