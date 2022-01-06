@@ -28,6 +28,7 @@ type NotebookMgmt interface {
 	DeleteNotebook() error
 	/*Get details*/
 	GetNotebooks(finishTime string, limit int, offset int) ([]Notebook, error)
+	GetNotebooksCount(finishTime time.Time, status string) (int64, error)
 }
 
 func (Notebook) TableName() string {
@@ -117,8 +118,8 @@ func (notebook *Notebook) GetNotebooks(finishTime string, limit int, offset int)
 		log.Error("Db connection is nil")
 		return nil, errors.New("database connection is nil")
 	}
-	syslogs := make([]Notebook, 0)
-	dataSet := db.Model(&syslogs)
+	notebooks := make([]Notebook, 0)
+	dataSet := db.Model(&notebooks)
 	if finishTime != "" && notebook.Status != "" {
 		statusArr := strings.Split(notebook.Status, ",")
 		dataSet.Where("DATE_FORMAT(FINISH_TIME,'%Y%m%d')=? AND STATUS IN (?) AND USERNAME = ?", finishTime, statusArr, notebook.Username)
@@ -130,8 +131,8 @@ func (notebook *Notebook) GetNotebooks(finishTime string, limit int, offset int)
 	} else {
 		dataSet.Where("USERNAME = ?", notebook.Username)
 	}
-	result := dataSet.Limit(limit).Offset(offset).Order("STATUS DESC, FINISH_TIME ASC, LEVEL ASC").Find(&syslogs)
-	return syslogs, result.Error
+	result := dataSet.Limit(limit).Offset(offset).Order("STATUS DESC, FINISH_TIME ASC, LEVEL ASC").Find(&notebooks)
+	return notebooks, result.Error
 }
 
 func (notebook *Notebook) GetNotebooksCount(finishTime time.Time, status string) (int64, error) {

@@ -60,4 +60,13 @@ func apiRoute(router *gin.Engine) {
 		notebookIndex.POST("", AddNotebookHandler(), RecordLogHandler())
 		notebookIndex.PUT("", UpdateNotebookHandler(), RecordLogHandler())
 	}
+
+	summaryBookIdx := router.Group("/summarybooks", AuthHandler())
+	{
+		summaryBookIdx.GET("", GetSummaryBooksHandler())
+		summaryBookIdx.GET("/content", GetSummaryBookContentHandler())
+		summaryBookIdx.DELETE("", DeleteSummaryBookHandler(), RecordLogHandler())
+		summaryBookIdx.POST("", AddSummaryBookHandler(), RecordLogHandler())
+		summaryBookIdx.PUT("", UpdateSummaryBookHandler(), RecordLogHandler())
+	}
 }

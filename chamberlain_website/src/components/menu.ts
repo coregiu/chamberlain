@@ -37,7 +37,7 @@ const USER_LOGIN_MENU = [
             }
         ]
     }, {
-        "name": "📙事务跟踪",
+        "name": "📙工作台",
         "image": "../../src/assets/svgs/notebook.svg",
         "url": "/notebook"
     }, {
@@ -76,7 +76,7 @@ const ADMIN_LOGIN_MENU = [
             }
         ]
     }, {
-        "name": "📙事务跟踪",
+        "name": "📙工作台",
         "image": "../../src/assets/svgs/notebook.svg",
         "url": "/notebook"
     }, {

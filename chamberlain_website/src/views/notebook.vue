@@ -1,6 +1,7 @@
 <template>
   <div style="float:left; width:10%;">
-    <span><p><b><a onclick="" onmouseover="this.style.cursor='pointer';">🖋 我的待办</a></b></p></span>
+    <span><p><b><router-link @click="changePanel('todo')" to="#" class="note-link">🖋 待办事务</router-link></b></p></span>
+    <span><p><b><router-link @click="changePanel('summary')" to="#" class="note-link">📙 日常记事</router-link></b></p></span>
   </div>
   <div style="float:right; width:90%">
     <DataTable ref="notebookTable" :value="notebookList" :paginator="true" class="p-datatable-customers" :rows="10"
@@ -12,6 +13,7 @@
 
       <template #header>
         <div>
+          <div style="float:left">我的待办列表</div>
           <div style="float:right">
             <Button type="button" class="p-button-secondary" @click="addNotebookDialog">添加待办</Button>&nbsp;
             <span class="p-input-icon-left">
@@ -59,10 +61,10 @@
         <template #body="noteData">
           <span style="background-color: #5d0c28; color: white; font-size: 17px"
                 v-if="!this.compareTodayTime(noteData.data.FinishTime, noteData.data.Status)">
-                {{this.formatDate(noteData.data.FinishTime)}}
+                {{ this.formatDate(noteData.data.FinishTime) }}
           </span>
           <span class="image-text" v-if="this.compareTodayTime(noteData.data.FinishTime, noteData.data.Status)">
-            {{this.formatDate(noteData.data.FinishTime)}}
+            {{ this.formatDate(noteData.data.FinishTime) }}
           </span>
         </template>
       </Column>
@@ -170,10 +172,10 @@ export default {
   data() {
     return {
       currentQueryObject: {"name": "全部", "code": "all"},
-      queryOptions: [{"name": "全部", "code": "all"}, {"name": "今日待办", "code": "today"}, {
-        "name": "未完成",
-        "code": "unfin"
-      }, {"name": "今日未完", "code": "tounfin"}],
+      queryOptions: [{"name": "全部", "code": "all"},
+        {"name": "今日待办", "code": "today"},
+        {"name": "未完成", "code": "unfin"},
+        {"name": "今日未完", "code": "tounfin"}],
       notebookList: null,
       loading: true,
       notebookInfo: null,
@@ -316,7 +318,18 @@ export default {
       } else {
         this.notebookService.getNotebookList("", "", 10000, 0).then(data => this.notebookList = data);
       }
+    },
+
+    changePanel(panel){
+      alert("------------------------" + panel)
     }
   }
 }
 </script>
+
+<style>
+.note-link{
+  color: #5d0c28;
+  text-decoration: none;
+}
+</style>

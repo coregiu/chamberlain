@@ -32,6 +32,8 @@ func init() {
 	authMap["/users/login"] = "none"
 	authMap["/users/logout"] = "all"
 	authMap["/notebooks"] = "all"
+	authMap["/summarybooks"] = "all"
+	authMap["/summarybooks/content"] = "all"
 
 	authMap["/inputs"] = "admin"
 	authMap["/syslogs"] = "admin"
