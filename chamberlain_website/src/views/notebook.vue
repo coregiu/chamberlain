@@ -37,7 +37,11 @@
           <span class="image-text">{{ this.formatDate(noteData.data.NoteTime) }}</span>
         </template>
       </Column>
-      <Column field="Content" header="内容" :sortable="true" sortField="Content"/>
+      <Column field="Content" header="内容" :sortable="true" sortField="Content">
+        <template #body="notebookInfo">
+          <span :title="notebookInfo.data.Content">{{notebookInfo.data.Content.length > 40 ? notebookInfo.data.Content.substring(0, 40) + " ..." : notebookInfo.data.Content}}</span>
+        </template>
+      </Column>
       <Column field="Level" header="级别" :sortable="true" sortField="Level">
         <template #body="noteData">
           <span style="background-color: #5d0c28; color: white; font-size: 21px"
@@ -161,6 +165,7 @@
       <Button label="是" icon="pi pi-check" class="p-button-text" @click="deleteNotebook"/>
     </template>
   </Dialog>
+
   <Dialog v-model:visible="tipDisplay" header="事务跟踪提示">{{ tipMessage }}</Dialog>
 </template>
 
@@ -254,7 +259,7 @@ export default {
       this.isDeleteNotebookDialogOpen = false;
       let res = await this.notebookService.deleteNotebook(this.notebookInfo)
       if ((typeof res == "string") && (res.indexOf("err:") === 0)) {
-        this.tipDisplay = true;
+        this    .tipDisplay = true;
         this.tipMessage = "删除失败！";
       } else {
         this.notebookList = this.notebookList.filter(val => val.NoteId !== this.notebookInfo.NoteId);
@@ -288,6 +293,7 @@ export default {
       let day = date.getDate()
       return year + '-' + month + '-' + day
     },
+
     formatRealFinishDate(status, realFinishTIme) {
       if (status === 'CLOSED') {
         return this.formatDate(realFinishTIme)
@@ -329,7 +335,10 @@ export default {
 
 <style>
 .note-link{
-  color: #5d0c28;
+  color: #3a0d14;
   text-decoration: none;
 }
+.note-link:hover{
+   color: #026da7;
+ }
 </style>
