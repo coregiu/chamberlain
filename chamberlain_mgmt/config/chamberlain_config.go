@@ -129,9 +129,9 @@ func (chamberlainConfig *ChamberlainConfig) loadDefaultDbConfig() {
 	databaseConfig := new(DatabaseConfig)
 	databaseConfig.Database = "chamberlain"
 	databaseConfig.Host = "database"
-	databaseConfig.Password = "199527"
+	databaseConfig.Password = ""
 	databaseConfig.Port = 3306
-	databaseConfig.Username = "root"
+	databaseConfig.Username = ""
 
 	chamberlainConfig.DatabaseConfig = databaseConfig
 }

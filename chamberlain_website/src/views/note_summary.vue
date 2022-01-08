@@ -12,7 +12,7 @@
     <ContextMenu ref="menu" :model="items"/>
   </div>
   <div style="float:right; width:80%;">
-    <Editor v-model="currentSummaryValue" editorStyle="height: 800px" @text-change="saveNoteContent"/>
+    <Editor v-model="currentSummaryValue" editorStyle="height: 800px" @focusout="saveNoteContent"/>
   </div>
 
   <Dialog v-model:visible="isDeleteDialogOpen" :style="{width: '350px'}" header="确认" :modal="true" v-if="currentSummaryNode">
@@ -52,7 +52,7 @@ export default {
     return {
       nodes: null,
       expandedKeys: {},
-      currentSummaryValue: "",
+      currentSummaryValue: "文本编辑框失去焦点后会自动保存文档...",
       selectedKeys: null,
       currentSummaryNode: null,
       isDeleteDialogOpen: false,
@@ -173,7 +173,10 @@ export default {
     },
 
     saveNoteContent(event) {
-      alert(this.currentSummaryValue)
+      if (!this.currentSummaryNode) {
+        return
+      }
+      this.nodeService.updateNoteSummary({"BookId": this.currentSummaryNode.key, "Content": this.currentSummaryValue})
     }
   }
 }
