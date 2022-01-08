@@ -24,12 +24,17 @@
     </template>
   </Dialog>
 
-  <Dialog v-model:visible="isNewDialogOpen" :style="{width: '300px'}" header="请输入" :modal="true">
-    <div class="confirmation-content">
-      <span>请输入文件名：<InputText v-model="newFileName" @keyup.enter.native="addNewBook()"></InputText></span>
-      <Button label="取消" icon="pi pi-times" class="p-button-text" @click="isNewDialogOpen = false"/>
-      <Button label="确认" icon="pi pi-check" class="p-button-text" @click="addNewBook()"/>
+  <Dialog v-model:visible="isNewDialogOpen" :style="{width: '300px'}" header="请输入" :modal="true" class="p-fluid">
+    <div class="p-field">
+      <label for="Username">请输入文件名:</label>
+      <InputText id="Username" v-model.trim="newFileName" required="true" autofocus @keyup.enter.native="addNewBook()"
+                 :class="{'p-invalid': submitted && !newFileName}"/>
+      <small class="p-invalid" v-if="submitted && !newFileName">**名称必须填写**</small>
     </div>
+    <template #footer>
+      <Button label="取消" icon="pi pi-times" class="p-button-text" @click="isNewDialogOpen = false"/>
+      <Button label="确认" icon="pi pi-check" class="p-button-text" @click="addNewBook"/>
+    </template>
   </Dialog>
 
   <Dialog v-model:visible="tipDisplay" header="提示">{{ tipMessage }}</Dialog>
@@ -51,6 +56,7 @@ export default {
       isDeleteDialogOpen: false,
       isNewDialogOpen: false,
       tipDisplay: false,
+      submitted: false,
       tipMessage: "",
       newFileName: "",
       items: [
@@ -82,7 +88,10 @@ export default {
     this.uuid = new Uuid()
   },
   mounted() {
-    this.nodeService.getTreeNodes().then(data => this.nodes = data);
+    this.nodeService.getTreeNodes().then(data => {
+      this.nodes = data
+      this.expandAll()
+    })
   },
   methods: {
     expandAll() {
@@ -114,6 +123,10 @@ export default {
     },
 
     addNewBook() {
+      this.submitted = true
+      if (!this.newFileName) {
+        return
+      }
       let parentBookId = this.currentSummaryNode === null ? "0" : this.currentSummaryNode.key
       let noteSummary = {"BookId": this.uuid.getUuid(), "BookName": this.newFileName, "ParentBookId": parentBookId, "BookTime": new Date()}
       this.nodeService.addNoteSummary(noteSummary).then(res => {
