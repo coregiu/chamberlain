@@ -7,52 +7,28 @@ export default class NoteSummaryService {
             "Content-Type": "application/json;charset=UTF-8",
             "X-AUTH-TOKEN": token.methods.getToken()
         }
-        return ajax.get("/api/notesummaryies", headers).then(res => this.buildNoteTree(res))
+        return ajax.get("/api/notesummaryies", headers).then(res => {
+            let treeNodes = []
+            this.buildNoteTree(res, "0", treeNodes)
+            return treeNodes
+        })
     }
 
-    buildNoteTree(noteList) {
-        let treeNodes = []
-        noteList.forEach(function (aNoteSummary) {
-            if (aNoteSummary.ParentBookId === '0') {
-                treeNodes.push({
+    buildNoteTree(noteList, parentBookId, treeNodes) {
+        for(let aNoteSummary of noteList) {
+            if (aNoteSummary.ParentBookId === parentBookId) {
+                let classIcon = parentBookId === "0" ? "pi pi-fw pi-inbox" : "pi pi-fw pi-calendar"
+                let subNode = {
                     "key": aNoteSummary.BookId,
                     "label": aNoteSummary.BookName,
                     "data": aNoteSummary.BookName,
-                    "icon": "pi pi-fw pi-calendar",
+                    "icon": classIcon,
                     "children": []
-                })
-            } else {
-                let appendNode = undefined
-                treeNodes.forEach(function getAppendNode(aNode) {
-                    if (aNode.key === aNoteSummary.ParentBookId) {
-                        appendNode = aNode
-                        return aNode
-                    }
-
-                    aNode.children.forEach(aChildren => {
-                        let childAppendNode = getAppendNode(aChildren)
-                        if (childAppendNode !== undefined) {
-                            appendNode = childAppendNode
-                            return childAppendNode
-                        }
-                    })
-                    return undefined
-                })
-
-                if (appendNode === undefined) {
-                    return
-                }
-
-                appendNode.children.push({
-                    "key": aNoteSummary.BookId,
-                    "label": aNoteSummary.BookName,
-                    "data": aNoteSummary.BookName,
-                    "icon": "pi pi-fw pi-calendar-plus",
-                    "children": []
-                })
+                };
+                treeNodes.push(subNode)
+                this.buildNoteTree(noteList, aNoteSummary.BookId, subNode.children)
             }
-        })
-        return treeNodes
+        }
     }
 
     getNoteSummaryContent(bookId) {
@@ -73,30 +49,30 @@ export default class NoteSummaryService {
         return ajax.post("/api/notesummaryies", headers, data)
     }
 
-    addBatchNoteSummaries(notebookInfoList) {
+    addBatchNoteSummaries(noteSummaryInfoList) {
         let headers = {
             "Content-Type": "application/json;charset=UTF-8",
             "X-AUTH-TOKEN": token.methods.getToken()
         }
-        let data = JSON.stringify(notebookInfoList);
+        let data = JSON.stringify(noteSummaryInfoList);
         return ajax.post("/api/notesummaryies", headers, data)
     }
 
-    deleteNoteSummary(notebookInfo) {
+    deleteNoteSummary(noteSummaryInfo) {
         let headers = {
             "Content-Type": "application/json;charset=UTF-8",
             "X-AUTH-TOKEN": token.methods.getToken()
         }
-        let data = JSON.stringify({"BookId": notebookInfo.key});
+        let data = JSON.stringify({"BookId": noteSummaryInfo.key});
         return ajax.delete("/api/notesummaryies", headers, data)
     }
 
-    updateNoteSummary(notebookInfo) {
+    updateNoteSummary(noteSummaryInfo) {
         let headers = {
             "Content-Type": "application/json;charset=UTF-8",
             "X-AUTH-TOKEN": token.methods.getToken()
         }
-        let data = JSON.stringify(notebookInfo);
+        let data = JSON.stringify(noteSummaryInfo);
         return ajax.put("/api/notesummaryies", headers, data)
     }
 }

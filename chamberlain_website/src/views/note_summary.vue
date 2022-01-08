@@ -1,8 +1,10 @@
 <template>
   <div style="float:left; width:20%;">
-    <div style="margin-bottom: 1em;">
-      <Button type="button" icon="pi pi-plus" class="p-button-text" label="全部展开" @click="expandAll"/>
-      <Button type="button" icon="pi pi-minus" class="p-button-text" label="全部关闭" @click="collapseAll"/>
+    <div style="margin-bottom: 0;">
+      <Button type="button" class="p-button-text" label="▽展开" @click="expandAll"/>
+      <Button type="button" class="p-button-text" label="▷折叠" @click="collapseAll"/>
+      <Button type="button" class="p-button-text" label="✎新建" @click="opNewBookDialog"/>
+      <Button type="button" class="p-button-text" label="✕删除" @click="openDeleteDialog"/>
     </div>
     <Tree :value="nodes" :expandedKeys="expandedKeys" @contextmenu="onMenuSelect"
           selectionMode="single" v-model:selectionKeys="selectedKeys"
@@ -10,13 +12,13 @@
     <ContextMenu ref="menu" :model="items"/>
   </div>
   <div style="float:right; width:80%;">
-    <Editor v-model="currentSummaryValue" editorStyle="height: 800px"/>
+    <Editor v-model="currentSummaryValue" editorStyle="height: 800px" @text-change="saveNoteContent"/>
   </div>
 
   <Dialog v-model:visible="isDeleteDialogOpen" :style="{width: '350px'}" header="确认" :modal="true" v-if="currentSummaryNode">
     <div class="confirmation-content">
       <i class="pi pi-exclamation-triangle p-mr-3" style="font-size: 2rem"/>
-      <span>你确认要删除吗{{currentSummaryNode.data}}?</span>
+      <span>你确认要删除 <b>{{currentSummaryNode.data}}</b> 吗?</span>
     </div>
     <template #footer>
       <Button label="否" icon="pi pi-times" class="p-button-text" @click="isDeleteDialogOpen = false"/>
@@ -141,6 +143,8 @@ export default {
 
     openDeleteDialog() {
       if (this.currentSummaryNode === null) {
+        this.tipDisplay = true;
+        this.tipMessage = "请先选择要删除的节点！";
         return
       }
       this.isDeleteDialogOpen = true
@@ -166,6 +170,10 @@ export default {
     },
 
     onNodeUnSelect() {
+    },
+
+    saveNoteContent(event) {
+      alert(this.currentSummaryValue)
     }
   }
 }
