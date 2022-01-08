@@ -47,7 +47,7 @@ func (summaryBook SummaryBook) BatchAddSummaryBook(summaryBooks *[]SummaryBook) 
 		log.Error("Db connection is nil")
 		return errors.New("database connection is nil")
 	}
-	result := db.CreateInBatches(summaryBook, len(*summaryBooks))
+	result := db.CreateInBatches(summaryBooks, len(*summaryBooks))
 	return result.Error
 }
 

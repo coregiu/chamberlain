@@ -24,10 +24,19 @@
     </template>
   </Dialog>
 
-  <Dialog v-model:visible="tipDisplay" header="事务跟踪提示">{{ tipMessage }}</Dialog>
+  <Dialog v-model:visible="isNewDialogOpen" :style="{width: '300px'}" header="请输入" :modal="true">
+    <div class="confirmation-content">
+      <span>请输入文件名：<InputText v-model="newFileName" @keyup.enter.native="addNewBook()"></InputText></span>
+      <Button label="取消" icon="pi pi-times" class="p-button-text" @click="isNewDialogOpen = false"/>
+      <Button label="确认" icon="pi pi-check" class="p-button-text" @click="addNewBook()"/>
+    </div>
+  </Dialog>
+
+  <Dialog v-model:visible="tipDisplay" header="提示">{{ tipMessage }}</Dialog>
 </template>
 
 <script>
+import Uuid from '../util/uuid.ts';
 import NoteSummaryService from '../api/note_summary.ts';
 
 export default {
@@ -40,8 +49,10 @@ export default {
       selectedKeys: null,
       currentSummaryNode: null,
       isDeleteDialogOpen: false,
+      isNewDialogOpen: false,
       tipDisplay: false,
       tipMessage: "",
+      newFileName: "",
       items: [
         {
           label: '新建',
@@ -65,8 +76,10 @@ export default {
     }
   },
   nodeService: null,
+  uuidService: null,
   created() {
     this.nodeService = new NoteSummaryService();
+    this.uuid = new Uuid()
   },
   mounted() {
     this.nodeService.getTreeNodes().then(data => this.nodes = data);
@@ -97,7 +110,20 @@ export default {
     },
 
     opNewBookDialog() {
+      this.isNewDialogOpen = true
+    },
 
+    addNewBook() {
+      let parentBookId = this.currentSummaryNode === null ? "0" : this.currentSummaryNode.key
+      let noteSummary = {"BookId": this.uuid.getUuid(), "BookName": this.newFileName, "ParentBookId": parentBookId, "BookTime": new Date()}
+      this.nodeService.addNoteSummary(noteSummary).then(res => {
+        if ((typeof res == "string") && (res.indexOf("err:") === 0)) {
+          this.tipDisplay = true;
+          this.tipMessage = "添加失败！";
+        } else {
+          location.reload()
+        }
+      })
     },
 
     openDeleteDialog() {
@@ -119,7 +145,6 @@ export default {
     },
 
     openMoveBookDialog() {
-      console.log("-----------unsupported now-------------")
     },
 
     onNodeSelect(node) {
@@ -128,7 +153,6 @@ export default {
     },
 
     onNodeUnSelect() {
-      this.currentSummaryNode = null
     }
   }
 }
