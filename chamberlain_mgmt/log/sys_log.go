@@ -68,7 +68,7 @@ func (syslog *SysLog) UpdateSyslog() error {
 		Error("Db connection is nil")
 		return errors.New("database connection is nil")
 	}
-	result := db.Model(&SysLog{}).Where("LOG_ID = ?", syslog.LogId).
+	result := db.Model(&syslog).Where("LOG_ID = ?", syslog.LogId).
 		Update("USERNAME", syslog.Username).
 		Update("OPERATION", syslog.Operation).
 		Update("OP_RESULT", syslog.OpResult).
@@ -91,7 +91,7 @@ func (syslog *SysLog) DeleteSyslog(syslogs *[]SysLog) error {
 		selectIds = append(selectIds, log.LogId)
 	}
 
-	result := db.Delete(&SysLog{}, "LOG_ID IN (?)", selectIds)
+	result := db.Delete(&syslog, "LOG_ID IN (?)", selectIds)
 	return result.Error
 }
 

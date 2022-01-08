@@ -21,6 +21,7 @@ type SummaryBookMgmt interface {
 	BatchAddSummaryBook(summaryBook *[]SummaryBook) error
 	UpdateSummaryBook() error
 	DeleteSummaryBook() error
+	DeleteSummaryBookWithChildren() error
 	/*Get details*/
 	GetSummaryBooks() ([]SummaryBook, error)
 	GetSummaryBookContent() error
@@ -72,13 +73,33 @@ func (summaryBook *SummaryBook) UpdateSummaryBook() error {
 	return nil
 }
 
+func (summaryBook *SummaryBook) DeleteSummaryBookWithChildren() error {
+	db := config.GetDbConnection()
+	if db == nil {
+		log.Error("Db connection is nil")
+		return errors.New("database connection is nil")
+	}
+	summaryBooks := make([]SummaryBook, 0)
+	result := db.Select("BOOK_ID, USERNAME").Where("USERNAME=? AND PARENT_BOOK_ID=?", summaryBook.Username, summaryBook.BookId).Find(&summaryBooks)
+	if result.Error != nil || len(summaryBooks) > 0 {
+		for _, aBook := range summaryBooks {
+			err := aBook.DeleteSummaryBookWithChildren()
+			if err != nil {
+				break
+			}
+		}
+	}
+	result = db.Delete(&summaryBook, "BOOK_ID = ? AND USERNAME=?", summaryBook.BookId, summaryBook.Username)
+	return result.Error
+}
+
 func (summaryBook *SummaryBook) DeleteSummaryBook() error {
 	db := config.GetDbConnection()
 	if db == nil {
 		log.Error("Db connection is nil")
 		return errors.New("database connection is nil")
 	}
-	result := db.Delete(&SummaryBook{}, "BOOK_ID = ? AND USERNAME=?", summaryBook.BookId, summaryBook.Username)
+	result := db.Delete(summaryBook, "BOOK_ID = ? AND USERNAME=?", summaryBook.BookId, summaryBook.Username)
 	return result.Error
 }
 

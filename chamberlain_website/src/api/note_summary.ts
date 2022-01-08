@@ -7,7 +7,7 @@ export default class NoteSummaryService {
             "Content-Type": "application/json;charset=UTF-8",
             "X-AUTH-TOKEN": token.methods.getToken()
         }
-        return ajax.get("/api/summarybooks", headers).then(res => this.buildNoteTree(res))
+        return ajax.get("/api/notesummaryies", headers).then(res => this.buildNoteTree(res))
     }
 
     buildNoteTree(noteList) {
@@ -60,17 +60,17 @@ export default class NoteSummaryService {
             "Content-Type": "application/json;charset=UTF-8",
             "X-AUTH-TOKEN": token.methods.getToken()
         }
-        return ajax.get("/api/summarybooks/content?book_id=" + bookId, headers)
+        return ajax.get("/api/notesummaryies/content?book_id=" + bookId, headers)
     }
 
-    addNoteSummary(notebookInfo) {
+    addNoteSummary(noteSummaryInfo) {
         let headers = {
             "Content-Type": "application/json;charset=UTF-8",
             "X-AUTH-TOKEN": token.methods.getToken()
         }
-        let notebooks = [notebookInfo]
-        let data = JSON.stringify(notebooks);
-        return ajax.post("/api/notebooks", headers, data)
+        let noteSummaries = [noteSummaryInfo]
+        let data = JSON.stringify(noteSummaries);
+        return ajax.post("/api/notesummaryies", headers, data)
     }
 
     addBatchNoteSummaries(notebookInfoList) {
@@ -79,7 +79,7 @@ export default class NoteSummaryService {
             "X-AUTH-TOKEN": token.methods.getToken()
         }
         let data = JSON.stringify(notebookInfoList);
-        return ajax.post("/api/notebooks", headers, data)
+        return ajax.post("/api/notesummaryies", headers, data)
     }
 
     deleteNoteSummary(notebookInfo) {
@@ -87,8 +87,8 @@ export default class NoteSummaryService {
             "Content-Type": "application/json;charset=UTF-8",
             "X-AUTH-TOKEN": token.methods.getToken()
         }
-        let data = JSON.stringify(notebookInfo);
-        return ajax.delete("/api/notebooks", headers, data)
+        let data = JSON.stringify({"BookId": notebookInfo.key});
+        return ajax.delete("/api/notesummaryies", headers, data)
     }
 
     updateNoteSummary(notebookInfo) {
@@ -97,6 +97,6 @@ export default class NoteSummaryService {
             "X-AUTH-TOKEN": token.methods.getToken()
         }
         let data = JSON.stringify(notebookInfo);
-        return ajax.put("/api/notebooks", headers, data)
+        return ajax.put("/api/notesummaryies", headers, data)
     }
 }

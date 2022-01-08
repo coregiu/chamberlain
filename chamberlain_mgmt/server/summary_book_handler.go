@@ -19,16 +19,12 @@ func AddSummaryBookHandler() gin.HandlerFunc {
 			return
 		}
 		log.Debug("summaryBook length =%s", fmt.Sprint(len(summaryBooks)))
-		tokenId := context.Request.Header.Get("X-AUTH-TOKEN")
-		token := auth.Token{}
-		token.TokenId = tokenId
-		mapToken, err := token.GetToken()
-		if err == nil {
-			username := mapToken.User.Username
-			for index := range summaryBooks {
-				summaryBooks[index].Username = username
-			}
+		username := getLoginUsername(context)
+
+		for index := range summaryBooks {
+			summaryBooks[index].Username = username
 		}
+
 		err = summaryBook.BatchAddSummaryBook(&summaryBooks)
 		if err != nil {
 			context.String(500, err.Error())
@@ -50,6 +46,9 @@ func UpdateSummaryBookHandler() gin.HandlerFunc {
 			return
 		}
 		log.Debug("InputTime =%s", fmt.Sprint(summaryBook.BookId))
+		username := getLoginUsername(context)
+		summaryBook.Username = username
+
 		err = summaryBook.UpdateSummaryBook()
 		if err != nil {
 			context.String(500, err.Error())
@@ -63,20 +62,22 @@ func UpdateSummaryBookHandler() gin.HandlerFunc {
 
 func DeleteSummaryBookHandler() gin.HandlerFunc {
 	return func(context *gin.Context) {
-		notebook := note.SummaryBook{}
-		err := context.BindJSON(&notebook)
+		noteSummary := note.SummaryBook{}
+		err := context.BindJSON(&noteSummary)
 		if err != nil {
 			log.Error(err.Error())
 			context.String(500, err.Error())
 			return
 		}
-		log.Debug("BookId =%s", fmt.Sprint(notebook.BookId))
-		err = notebook.DeleteSummaryBook()
+		log.Debug("BookId =%s", fmt.Sprint(noteSummary.BookId))
+		username := getLoginUsername(context)
+		noteSummary.Username = username
+		err = noteSummary.DeleteSummaryBookWithChildren()
 		if err != nil {
 			context.String(500, err.Error())
 		} else {
 			context.JSON(200, gin.H{
-				"result": "Delete notebook successfully.",
+				"result": "Delete noteSummary successfully.",
 			})
 		}
 	}
@@ -90,14 +91,7 @@ func GetSummaryBooksHandler() gin.HandlerFunc {
 		status, _ := context.GetQuery("status")
 		log.Info("finish time = %s, status = %s, limit = %d, offset = %d", queryFinishTime, status, limit, offset)
 
-		username := ""
-		tokenId := context.Request.Header.Get("X-AUTH-TOKEN")
-		token := auth.Token{}
-		token.TokenId = tokenId
-		mapToken, err := token.GetToken()
-		if err == nil {
-			username = mapToken.User.Username
-		}
+		username := getLoginUsername(context)
 
 		notebook := note.SummaryBook{}
 		notebook.Username = username
@@ -115,23 +109,28 @@ func GetSummaryBookContentHandler() gin.HandlerFunc {
 		bookId, _ := context.GetQuery("book_id")
 		log.Info("book_id = %s", bookId)
 
-		username := ""
-		tokenId := context.Request.Header.Get("X-AUTH-TOKEN")
-		token := auth.Token{}
-		token.TokenId = tokenId
-		mapToken, err := token.GetToken()
-		if err == nil {
-			username = mapToken.User.Username
-		}
+		username := getLoginUsername(context)
 
 		summaryBook := note.SummaryBook{}
 		summaryBook.Username = username
 		summaryBook.BookId = bookId
-		err = summaryBook.GetSummaryBooksContent()
+		err := summaryBook.GetSummaryBooksContent()
 		if err != nil {
 			context.String(500, err.Error())
 		} else {
 			context.JSON(200, summaryBook)
 		}
 	}
+}
+
+func getLoginUsername(context *gin.Context) string {
+	username := ""
+	tokenId := context.Request.Header.Get("X-AUTH-TOKEN")
+	token := auth.Token{}
+	token.TokenId = tokenId
+	mapToken, err := token.GetToken()
+	if err == nil {
+		username = mapToken.User.Username
+	}
+	return username
 }

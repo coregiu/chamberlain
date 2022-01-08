@@ -61,7 +61,7 @@ func (notebook *Notebook) UpdateNotebook() error {
 		log.Error("Db connection is nil")
 		return errors.New("database connection is nil")
 	}
-	dataSet := db.Model(&Notebook{}).Where("NOTE_ID = ?", notebook.NoteId)
+	dataSet := db.Model(&notebook).Where("NOTE_ID = ?", notebook.NoteId)
 	nilTime := time.Time{}
 	if notebook.FinishTime != nilTime {
 		result := dataSet.Update("FINISH_TIME", notebook.FinishTime)
@@ -108,7 +108,7 @@ func (notebook *Notebook) DeleteNotebook() error {
 		log.Error("Db connection is nil")
 		return errors.New("database connection is nil")
 	}
-	result := db.Delete(&Notebook{}, "NOTE_ID = ?", notebook.NoteId)
+	result := db.Delete(&notebook, "NOTE_ID = ?", notebook.NoteId)
 	return result.Error
 }
 

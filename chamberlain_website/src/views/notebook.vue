@@ -154,7 +154,7 @@
   <Dialog v-model:visible="isDeleteNotebookDialogOpen" :style="{width: '350px'}" header="确认" :modal="true">
     <div class="confirmation-content">
       <i class="pi pi-exclamation-triangle p-mr-3" style="font-size: 2rem"/>
-      <span v-if="notebookInfo">你确认要删除 <b>{{ notebookInfo.Content }}</b>?</span>
+      <span v-if="notebookInfo">你确认要删除吗?</span>
     </div>
     <template #footer>
       <Button label="否" icon="pi pi-times" class="p-button-text" @click="isDeleteNotebookDialogOpen = false"/>

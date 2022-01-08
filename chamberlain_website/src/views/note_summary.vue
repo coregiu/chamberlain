@@ -10,16 +10,21 @@
     <ContextMenu ref="menu" :model="items"/>
   </div>
   <div style="float:right; width:80%;">
-    <Editor v-model="currentSummaryValue" editorStyle="height: 800px">
-      <template slot="toolbar">
-        <span class="ql-formats">
-          <button class="ql-bold"></button>
-          <button class="ql-italic"></button>
-          <button class="ql-underline"></button>
-        </span>
-      </template>
-    </Editor>
+    <Editor v-model="currentSummaryValue" editorStyle="height: 800px"/>
   </div>
+
+  <Dialog v-model:visible="isDeleteDialogOpen" :style="{width: '350px'}" header="确认" :modal="true" v-if="currentSummaryNode">
+    <div class="confirmation-content">
+      <i class="pi pi-exclamation-triangle p-mr-3" style="font-size: 2rem"/>
+      <span>你确认要删除吗{{currentSummaryNode.data}}?</span>
+    </div>
+    <template #footer>
+      <Button label="否" icon="pi pi-times" class="p-button-text" @click="isDeleteDialogOpen = false"/>
+      <Button label="是" icon="pi pi-check" class="p-button-text" @click="deleteNoteSummary"/>
+    </template>
+  </Dialog>
+
+  <Dialog v-model:visible="tipDisplay" header="事务跟踪提示">{{ tipMessage }}</Dialog>
 </template>
 
 <script>
@@ -34,16 +39,19 @@ export default {
       currentSummaryValue: "",
       selectedKeys: null,
       currentSummaryNode: null,
+      isDeleteDialogOpen: false,
+      tipDisplay: false,
+      tipMessage: "",
       items: [
         {
           label: '新建',
           icon: 'pi pi-fw pi-plus',
-          command:() => this.newBook(),
+          command:() => this.opNewBookDialog(),
         },
         {
           label: '删除',
           icon: 'pi pi-fw pi-trash',
-          command:() => this.deleteBook(),
+          command:() => this.openDeleteDialog(),
         },
         {
           separator: true
@@ -51,7 +59,7 @@ export default {
         {
           label: '移动',
           icon:'pi pi-fw pi-external-link',
-          command:() => this.moveBook(),
+          command:() => this.openMoveBookDialog(),
         }
       ]
     }
@@ -88,15 +96,29 @@ export default {
       this.$refs.menu.show(event);
     },
 
-    newBook() {
-      
-    },
-
-    deleteBook() {
+    opNewBookDialog() {
 
     },
 
-    moveBook() {
+    openDeleteDialog() {
+      if (this.currentSummaryNode === null) {
+        return
+      }
+      this.isDeleteDialogOpen = true
+    },
+
+    deleteNoteSummary() {
+      this.nodeService.deleteNoteSummary(this.currentSummaryNode).then(res => {
+        if ((typeof res == "string") && (res.indexOf("err:") === 0)) {
+          this.tipDisplay = true;
+          this.tipMessage = "删除失败！";
+        } else {
+          location.reload()
+        }
+      })
+    },
+
+    openMoveBookDialog() {
       console.log("-----------unsupported now-------------")
     },
 
