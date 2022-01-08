@@ -38,6 +38,8 @@ import ColumnGroup from 'primevue/columngroup';
 import RadioButton from 'primevue/radiobutton';
 import Calendar from 'primevue/calendar';
 import Textarea from 'primevue/textarea';
+import Editor from 'primevue/editor';
+import ContextMenu from 'primevue/contextmenu';
 
 const app = createApp(App);
 app.use(router);
@@ -70,6 +72,8 @@ app.component("RadioButton", RadioButton);
 app.component("Calendar", Calendar);
 app.component("Textarea", Textarea);
 app.component("Dropdown", Dropdown);
+app.component("Editor", Editor);
+app.component("ContextMenu", ContextMenu);
 
 app.config.globalProperties.$axios = ajax;
 app.config.globalProperties.$token = token;

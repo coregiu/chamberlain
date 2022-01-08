@@ -122,12 +122,12 @@ func (notebook *Notebook) GetNotebooks(finishTime string, limit int, offset int)
 	dataSet := db.Model(&notebooks)
 	if finishTime != "" && notebook.Status != "" {
 		statusArr := strings.Split(notebook.Status, ",")
-		dataSet.Where("DATE_FORMAT(FINISH_TIME,'%Y%m%d')=? AND STATUS IN (?) AND USERNAME = ?", finishTime, statusArr, notebook.Username)
+		dataSet.Where("DATE_FORMAT(FINISH_TIME,'%Y%m%d')<=? AND STATUS IN (?) AND USERNAME = ?", finishTime, statusArr, notebook.Username)
 	} else if notebook.Status != "" {
 		statusArr := strings.Split(notebook.Status, ",")
 		dataSet.Where("STATUS IN (?) AND USERNAME = ?", statusArr, notebook.Username)
 	} else if finishTime != "" {
-		dataSet.Where("DATE_FORMAT(FINISH_TIME,'%Y%m%d')=? AND USERNAME = ?", finishTime, notebook.Username)
+		dataSet.Where("DATE_FORMAT(FINISH_TIME,'%Y%m%d')<=? AND USERNAME = ?", finishTime, notebook.Username)
 	} else {
 		dataSet.Where("USERNAME = ?", notebook.Username)
 	}

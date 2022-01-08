@@ -29,7 +29,7 @@
 
     <Column header="任务时间" field="NoteTime" :sortable="true" sortField="NoteTime">
       <template #body="noteData">
-        <span class="image-text">{{ this.formatDate(noteData.data.NoteTime) }}</span>
+        <span class="image-text">{{ this.selfFormat.formatDate(noteData.data.NoteTime) }}</span>
       </template>
     </Column>
     <Column field="Content" header="内容" :sortable="true" sortField="Content">
@@ -62,17 +62,17 @@
       <template #body="noteData">
           <span style="background-color: #5d0c28; color: white; font-size: 17px"
                 v-if="!this.compareTodayTime(noteData.data.FinishTime, noteData.data.Status)">
-                {{ this.formatDate(noteData.data.FinishTime) }}
+                {{ this.selfFormat.formatDate(noteData.data.FinishTime) }}
           </span>
         <span class="image-text" v-if="this.compareTodayTime(noteData.data.FinishTime, noteData.data.Status)">
-            {{ this.formatDate(noteData.data.FinishTime) }}
+            {{ this.selfFormat.formatDate(noteData.data.FinishTime) }}
           </span>
       </template>
     </Column>
     <Column field="Owner" header="责任人" :sortable="true" sortField="Owner"/>
     <Column field="RealFinishTime" header="实际完成时间" :sortable="true" sortField="RealFinishTime">
       <template #body="noteData">
-        <span class="image-text">{{ formatRealFinishDate(noteData.data.Status, noteData.data.RealFinishTime) }}</span>
+        <span class="image-text">{{ noteData.data.Status === 'CLOSED' ? this.selfFormat.formatDate(noteData.data.RealFinishTime) : "" }}</span>
       </template>
     </Column>
     <Column header="操作" headerStyle="width: 8rem; text-align: center"
@@ -167,6 +167,8 @@
 
 <script>
 import NotebookService from '../api/notebook.ts';
+import SelfFormat from "../util/format_util.ts"
+import Uuid from "../util/uuid.ts"
 
 export default {
   name: "notebook",
@@ -189,8 +191,12 @@ export default {
     }
   },
   notebookService: null,
+  selfFormat: null,
+  uuid: null,
   created() {
     this.notebookService = new NotebookService();
+    this.selfFormat = new SelfFormat();
+    this.uuid = new Uuid();
   },
   mounted() {
     this.notebookService.getNotebookList("", "", 10000, 0).then(data => this.notebookList = data);
@@ -216,7 +222,7 @@ export default {
     async saveNotebook() {
       this.submitted = true;
       if (this.isAddOperation) {
-        this.notebookInfo.NoteId = this.getUuid()
+        this.notebookInfo.NoteId = this.uuid.getUuid()
         this.notebookInfo.NoteTime = new Date()
         this.notebookInfo.Status = "NEW"
         this.notebookInfo.RealFinishTime = new Date(this.notebookInfo.FinishTime.getFullYear() + 1, this.notebookInfo.FinishTime.getMonth() + 1, this.notebookInfo.FinishTime.getDate(), 0, 0, 0)
@@ -272,30 +278,6 @@ export default {
 
     exportCSV() {
       this.$refs.notebookTable.exportCSV();
-    },
-
-    getUuid() {
-      function S4() {
-        return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
-      }
-
-      return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
-    },
-
-    formatDate(time) {
-      let date = new Date(time)
-      let year = date.getFullYear()
-      let month = date.getMonth() + 1 //月份是从0开始的
-      let day = date.getDate()
-      return year + '-' + month + '-' + day
-    },
-
-    formatRealFinishDate(status, realFinishTIme) {
-      if (status === 'CLOSED') {
-        return this.formatDate(realFinishTIme)
-      } else {
-        return ""
-      }
     },
 
     compareTodayTime(time, status) {

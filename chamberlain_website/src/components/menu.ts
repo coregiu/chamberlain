@@ -107,7 +107,7 @@ const ADMIN_LOGIN_MENU = [
                 "url": "/sys_log"
             },
             {
-                "name": "🖱 系统检查",
+                "name": "🖱 系统统计",
                 "url": "/sys_back"
             }
         ]

@@ -126,6 +126,7 @@ func GetSummaryBookContentHandler() gin.HandlerFunc {
 
 		summaryBook := note.SummaryBook{}
 		summaryBook.Username = username
+		summaryBook.BookId = bookId
 		err = summaryBook.GetSummaryBooksContent()
 		if err != nil {
 			context.String(500, err.Error())

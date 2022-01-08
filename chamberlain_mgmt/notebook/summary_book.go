@@ -10,6 +10,7 @@ import (
 type SummaryBook struct {
 	BookId       string    `gorm:"column:BOOK_ID"`
 	ParentBookId string    `gorm:"column:PARENT_BOOK_ID"`
+	BookName     string    `gorm:"column:BOOK_NAME"`
 	Username     string    `gorm:"column:USERNAME"`
 	Content      string    `gorm:"column:CONTENT"`
 	BookTime     time.Time `gorm:"column:BOOK_TIME"`
@@ -26,7 +27,7 @@ type SummaryBookMgmt interface {
 }
 
 func (SummaryBook) TableName() string {
-	return "SUMMARY_BOOKS"
+	return "NOTE_SUMMARIES"
 }
 
 func (summaryBook *SummaryBook) AddSummaryBook() error {
@@ -88,7 +89,7 @@ func (summaryBook *SummaryBook) GetSummaryBooks() ([]SummaryBook, error) {
 		return nil, errors.New("database connection is nil")
 	}
 	summaryBooks := make([]SummaryBook, 0)
-	result := db.Select("BOOK_ID, PARENT_BOOK_ID, USERNAME, BOOK_TIME").Where("USERNAME=?", summaryBook.Username).Or("PARENT_BOOK_ID, BOOK_TIME DESC").Find(&summaryBook)
+	result := db.Select("BOOK_ID, PARENT_BOOK_ID, BOOK_NAME, USERNAME, BOOK_TIME").Where("USERNAME=?", summaryBook.Username).Order("PARENT_BOOK_ID, BOOK_TIME DESC").Find(&summaryBooks)
 	return summaryBooks, result.Error
 }
 
