@@ -1,90 +1,94 @@
 <template>
-  <DataTable ref="notebookTable" :value="notebookList" :paginator="true" class="p-datatable-customers" :rows="10"
-             dataKey="NoteId" :rowHover="true"
-             :loading="loading"
-             paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
-             :rowsPerPageOptions="[10,25,50]"
-             currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries">
+  <div style="float:left; width:10%;">
+    <span><p><b><router-link @click="changePanel('todo')" to="#" class="note-link">🖋 待办事务</router-link></b></p></span>
+    <span><p><b><router-link @click="changePanel('summary')" to="#" class="note-link">📙 日常记事</router-link></b></p></span>
+  </div>
+  <div style="float:right; width:90%">
+    <DataTable ref="notebookTable" :value="notebookList" :paginator="true" class="p-datatable-customers" :rows="10"
+               dataKey="NoteId" :rowHover="true"
+               :loading="loading"
+               paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+               :rowsPerPageOptions="[10,25,50]"
+               currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries">
 
-    <template #header>
-      <div>
-        <div style="float:left">我的待办列表</div>
-        <div style="float:right">
-          <Button type="button" class="p-button-secondary" @click="addNotebookDialog">添加待办</Button>&nbsp;
-          <span class="p-input-icon-left">
+      <template #header>
+        <div>
+          <div style="float:left">我的待办列表</div>
+          <div style="float:right">
+            <Button type="button" class="p-button-secondary" @click="addNotebookDialog">添加待办</Button>&nbsp;
+            <span class="p-input-icon-left">
               <i class="pi pi-search"/>
               <Dropdown v-model="currentQueryObject" :options="queryOptions" optionLabel="name"
                         :placeholder="currentQueryObject.code" @change="changeQuery"/>
             </span>&nbsp;
-          <Button label="导出" icon="pi pi-upload" class="p-button-secondary" @click="exportCSV($event)"/>&nbsp;
+            <Button label="导出" icon="pi pi-upload" class="p-button-secondary" @click="exportCSV($event)"/>&nbsp;
+          </div>
         </div>
-      </div>
-    </template>
-    <template #empty>
-      无数据
-    </template>
-    <template #loading>
-      正在加载数据，请稍等...
-    </template>
+      </template>
+      <template #empty>
+        无数据
+      </template>
+      <template #loading>
+        正在加载数据，请稍等...
+      </template>
 
-    <Column header="任务时间" field="NoteTime" :sortable="true" sortField="NoteTime">
-      <template #body="noteData">
-        <span class="image-text">{{ this.formatDate(noteData.data.NoteTime) }}</span>
-      </template>
-    </Column>
-    <Column field="Content" header="内容" :sortable="true" sortField="Content">
-      <template #body="notebookInfo">
-        <span
-            :title="notebookInfo.data.Content">{{ notebookInfo.data.Content.length > 40 ? notebookInfo.data.Content.substring(0, 40) + " ..." : notebookInfo.data.Content }}</span>
-      </template>
-    </Column>
-    <Column field="Level" header="级别" :sortable="true" sortField="Level">
-      <template #body="noteData">
+      <Column header="任务时间" field="NoteTime" :sortable="true" sortField="NoteTime">
+        <template #body="noteData">
+          <span class="image-text">{{ this.formatDate(noteData.data.NoteTime) }}</span>
+        </template>
+      </Column>
+      <Column field="Content" header="内容" :sortable="true" sortField="Content">
+        <template #body="notebookInfo">
+          <span :title="notebookInfo.data.Content">{{notebookInfo.data.Content.length > 40 ? notebookInfo.data.Content.substring(0, 40) + " ..." : notebookInfo.data.Content}}</span>
+        </template>
+      </Column>
+      <Column field="Level" header="级别" :sortable="true" sortField="Level">
+        <template #body="noteData">
           <span style="background-color: #5d0c28; color: white; font-size: 21px"
                 v-if="noteData.data.Level === 'H'">高</span>
-        <span style="background-color: #8a6a19; color: white; font-size: 21px"
-              v-if="noteData.data.Level === 'M'">中</span>
-        <span style="background-color: #0b7ad1; color: white; font-size: 21px"
-              v-if="noteData.data.Level === 'L'">低</span>
-      </template>
-    </Column>
-    <Column field="Status" header="状态" :sortable="true" sortField="Status">
-      <template #body="noteData">
-        <span style="background-color: #8f5902; color: white; font-size: 19px"
-              v-if="noteData.data.Status === 'NEW'">未启动</span>
-        <span style="background-color: #026da7; color: white; font-size: 19px"
-              v-if="noteData.data.Status === 'DOING'">进行中</span>
-        <span style="background-color: #4caf50; color: white; font-size: 19px"
-              v-if="noteData.data.Status === 'CLOSED'">已完成</span>
-      </template>
-    </Column>
-    <Column field="FinishTime" header="计划完成时间" :sortable="true" sortField="FinishTime">
-      <template #body="noteData">
+          <span style="background-color: #8a6a19; color: white; font-size: 21px"
+                v-if="noteData.data.Level === 'M'">中</span>
+          <span style="background-color: #0b7ad1; color: white; font-size: 21px"
+                v-if="noteData.data.Level === 'L'">低</span>
+        </template>
+      </Column>
+      <Column field="Status" header="状态" :sortable="true" sortField="Status">
+        <template #body="noteData">
+          <span style="background-color: #8f5902; color: white; font-size: 19px" v-if="noteData.data.Status === 'NEW'">未启动</span>
+          <span style="background-color: #026da7; color: white; font-size: 19px"
+                v-if="noteData.data.Status === 'DOING'">进行中</span>
+          <span style="background-color: #4caf50; color: white; font-size: 19px"
+                v-if="noteData.data.Status === 'CLOSED'">已完成</span>
+        </template>
+      </Column>
+      <Column field="FinishTime" header="计划完成时间" :sortable="true" sortField="FinishTime">
+        <template #body="noteData">
           <span style="background-color: #5d0c28; color: white; font-size: 17px"
                 v-if="!this.compareTodayTime(noteData.data.FinishTime, noteData.data.Status)">
                 {{ this.formatDate(noteData.data.FinishTime) }}
           </span>
-        <span class="image-text" v-if="this.compareTodayTime(noteData.data.FinishTime, noteData.data.Status)">
+          <span class="image-text" v-if="this.compareTodayTime(noteData.data.FinishTime, noteData.data.Status)">
             {{ this.formatDate(noteData.data.FinishTime) }}
           </span>
-      </template>
-    </Column>
-    <Column field="Owner" header="责任人" :sortable="true" sortField="Owner"/>
-    <Column field="RealFinishTime" header="实际完成时间" :sortable="true" sortField="RealFinishTime">
-      <template #body="noteData">
-        <span class="image-text">{{ formatRealFinishDate(noteData.data.Status, noteData.data.RealFinishTime) }}</span>
-      </template>
-    </Column>
-    <Column header="操作" headerStyle="width: 8rem; text-align: center"
-            bodyStyle="text-align: center; overflow: visible">
-      <template #body="notebookInfo">
-        <Button type="button" icon="pi pi-pencil" class="p-button-secondary" title="修改"
-                @click="openUpdateNotebookDialog(notebookInfo)"></Button>&nbsp;&nbsp;
-        <Button type="button" icon="pi pi-trash" class="p-button-danger" title="删除"
-                @click="openDeleteNotebookDialog(notebookInfo)"></Button>
-      </template>
-    </Column>
-  </DataTable>
+        </template>
+      </Column>
+      <Column field="Owner" header="责任人" :sortable="true" sortField="Owner"/>
+      <Column field="RealFinishTime" header="实际完成时间" :sortable="true" sortField="RealFinishTime">
+        <template #body="noteData">
+          <span class="image-text">{{ formatRealFinishDate(noteData.data.Status, noteData.data.RealFinishTime) }}</span>
+        </template>
+      </Column>
+      <Column header="操作" headerStyle="width: 8rem; text-align: center"
+              bodyStyle="text-align: center; overflow: visible">
+        <template #body="notebookInfo">
+          <Button type="button" icon="pi pi-pencil" class="p-button-secondary" title="修改"
+                  @click="openUpdateNotebookDialog(notebookInfo)"></Button>&nbsp;&nbsp;
+          <Button type="button" icon="pi pi-trash" class="p-button-danger" title="删除"
+                  @click="openDeleteNotebookDialog(notebookInfo)"></Button>
+        </template>
+      </Column>
+    </DataTable>
+  </div>
 
   <Dialog v-model:visible="isNewNotebookDialogOpen" :style="{width: '350px'}" header="待办信息" :modal="true"
           class="p-fluid">
@@ -169,7 +173,7 @@
 import NotebookService from '../api/notebook.ts';
 
 export default {
-  name: "notebook",
+  name: "note_summary",
   data() {
     return {
       currentQueryObject: {"name": "全部", "code": "all"},
@@ -255,7 +259,7 @@ export default {
       this.isDeleteNotebookDialogOpen = false;
       let res = await this.notebookService.deleteNotebook(this.notebookInfo)
       if ((typeof res == "string") && (res.indexOf("err:") === 0)) {
-        this.tipDisplay = true;
+        this    .tipDisplay = true;
         this.tipMessage = "删除失败！";
       } else {
         this.notebookList = this.notebookList.filter(val => val.NoteId !== this.notebookInfo.NoteId);
@@ -320,7 +324,21 @@ export default {
       } else {
         this.notebookService.getNotebookList("", "", 10000, 0).then(data => this.notebookList = data);
       }
+    },
+
+    changePanel(panel){
+      alert("------------------------" + panel)
     }
   }
 }
 </script>
+
+<style>
+.note-link{
+  color: #3a0d14;
+  text-decoration: none;
+}
+.note-link:hover{
+   color: #026da7;
+ }
+</style>

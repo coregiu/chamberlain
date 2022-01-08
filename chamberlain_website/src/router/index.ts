@@ -1,6 +1,8 @@
 import {createRouter, createWebHashHistory} from 'vue-router'
 import Philosophy from "../views/philosophy.vue"
 import Summary from "../views/summary.vue"
+import NoteNavigate from "../views/note_navigate.vue"
+import NoteSummary from "../views/note_summary.vue"
 import Notebook from "../views/notebook.vue"
 import Dashboard from "../views/dashboard.vue"
 import InputDetails from "../views/input_details.vue"
@@ -29,9 +31,21 @@ const routes: Array<any> = [
         component: Summary,
     },
     {
-        path: "/notebook",
-        name: "Notebook",
-        component: Notebook,
+        path: "/note_navigate",
+        name: "NoteNavigate",
+        component: NoteNavigate,
+        children:[
+            {
+                path: '/notebook',
+                name: 'NoteBook',
+                component: Notebook
+            },
+            {
+                path: '/note_summary',
+                name: 'NoteSummary',
+                component: NoteSummary
+            }
+        ]
     },
     {
         path: "/input_details",
