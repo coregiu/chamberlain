@@ -7,14 +7,11 @@ export default class NoteSummaryService {
             "Content-Type": "application/json;charset=UTF-8",
             "X-AUTH-TOKEN": token.methods.getToken()
         }
-        return ajax.get("/api/notesummaryies", headers).then(res => {
-            let treeNodes = []
-            this.buildNoteTree(res, "0", treeNodes)
-            return treeNodes
-        })
+        return ajax.get("/api/notesummaryies", headers).then(res => this.buildNoteTree(res, "0"))
     }
 
-    buildNoteTree(noteList, parentBookId, treeNodes) {
+    buildNoteTree(noteList, parentBookId) {
+        let treeNodes = []
         for(let aNoteSummary of noteList) {
             if (aNoteSummary.ParentBookId === parentBookId) {
                 let classIcon = parentBookId === "0" ? "pi pi-fw pi-inbox" : "pi pi-fw pi-calendar"
@@ -24,11 +21,12 @@ export default class NoteSummaryService {
                     "data": aNoteSummary.BookName,
                     "icon": classIcon,
                     "children": []
-                };
+                }
                 treeNodes.push(subNode)
-                this.buildNoteTree(noteList, aNoteSummary.BookId, subNode.children)
+                subNode.children = this.buildNoteTree(noteList, aNoteSummary.BookId)
             }
         }
+        return treeNodes
     }
 
     getNoteSummaryContent(bookId) {
