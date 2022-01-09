@@ -3,3 +3,5 @@ node_modules
 upx
 dist
 books
+server*.key
+server.pem
