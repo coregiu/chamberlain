@@ -12,13 +12,15 @@
     <ContextMenu ref="menu" :model="items"/>
   </div>
   <div style="float:right; width:80%;">
-    <Editor v-model="currentSummaryValue" editorStyle="height: 800px" @focusout="saveNoteContent"/>
+    <Editor v-model="currentSummaryNode.Content" editorStyle="height: 800px" @focusout="saveNoteContent"
+            @focusin="this.editChangeCheckValue = this.currentSummaryNode.Content"/>
   </div>
 
-  <Dialog v-model:visible="isDeleteDialogOpen" :style="{width: '350px'}" header="确认" :modal="true" v-if="currentSummaryNode">
+  <Dialog v-model:visible="isDeleteDialogOpen" :style="{width: '350px'}" header="确认" :modal="true"
+          v-if="currentSummaryNode">
     <div class="confirmation-content">
       <i class="pi pi-exclamation-triangle p-mr-3" style="font-size: 2rem"/>
-      <span>你确认要删除 <b>{{currentSummaryNode.data}}</b> 吗?</span>
+      <span>你确认要删除 <b>{{ currentSummaryNode.data }}</b> 吗?</span>
     </div>
     <template #footer>
       <Button label="否" icon="pi pi-times" class="p-button-text" @click="isDeleteDialogOpen = false"/>
@@ -52,9 +54,9 @@ export default {
     return {
       nodes: null,
       expandedKeys: {},
-      currentSummaryValue: "文本编辑框失去焦点后会自动保存文档...",
+      editChangeCheckValue: "",
       selectedKeys: null,
-      currentSummaryNode: null,
+      currentSummaryNode: {"Content": "文本编辑框失去焦点后会自动保存文档..."},
       isDeleteDialogOpen: false,
       isNewDialogOpen: false,
       tipDisplay: false,
@@ -65,20 +67,20 @@ export default {
         {
           label: '新建',
           icon: 'pi pi-fw pi-plus',
-          command:() => this.opNewBookDialog(),
+          command: () => this.opNewBookDialog(),
         },
         {
           label: '删除',
           icon: 'pi pi-fw pi-trash',
-          command:() => this.openDeleteDialog(),
+          command: () => this.openDeleteDialog(),
         },
         {
           separator: true
         },
         {
           label: '移动',
-          icon:'pi pi-fw pi-external-link',
-          command:() => this.openMoveBookDialog(),
+          icon: 'pi pi-fw pi-external-link',
+          command: () => this.openMoveBookDialog(),
         }
       ]
     }
@@ -130,7 +132,12 @@ export default {
         return
       }
       let parentBookId = this.currentSummaryNode === null ? "0" : this.currentSummaryNode.key
-      let noteSummary = {"BookId": this.uuid.getUuid(), "BookName": this.newFileName, "ParentBookId": parentBookId, "BookTime": new Date()}
+      let noteSummary = {
+        "BookId": this.uuid.getUuid(),
+        "BookName": this.newFileName,
+        "ParentBookId": parentBookId,
+        "BookTime": new Date()
+      }
       this.nodeService.addNoteSummary(noteSummary).then(res => {
         if ((typeof res == "string") && (res.indexOf("err:") === 0)) {
           this.tipDisplay = true;
@@ -166,17 +173,19 @@ export default {
 
     onNodeSelect(node) {
       this.currentSummaryNode = node
-      this.nodeService.getNoteSummaryContent(this.currentSummaryNode.key).then(res => this.currentSummaryValue = res.Content)
+      if (!this.currentSummaryNode.Content) {
+        this.nodeService.getNoteSummaryContent(this.currentSummaryNode.key).then(res => this.currentSummaryNode.Content = res.Content)
+      }
     },
 
     onNodeUnSelect() {
     },
 
     saveNoteContent(event) {
-      if (!this.currentSummaryNode) {
+      if (!this.currentSummaryNode || this.editChangeCheckValue === this.currentSummaryNode.Content) {
         return
       }
-      this.nodeService.updateNoteSummary({"BookId": this.currentSummaryNode.key, "Content": this.currentSummaryValue})
+      this.nodeService.updateNoteSummary({"BookId": this.currentSummaryNode.key, "Content": this.currentSummaryNode.Content})
     }
   }
 }
