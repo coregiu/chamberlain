@@ -12,8 +12,8 @@
     <ContextMenu ref="menu" :model="items"/>
   </div>
   <div style="float:right; width:80%;">
-    <Editor v-model="currentSummaryNode.Content" editorStyle="height: 800px" @focusout="saveNoteContent"
-            @focusin="this.editChangeCheckValue = this.currentSummaryNode.Content"/>
+    <Editor v-model="currentSummaryNode.content" editorStyle="height: 800px" @focusout="saveNoteContent"
+            @focusin="this.editChangeCheckValue = this.currentSummaryNode.content"/>
   </div>
 
   <Dialog v-model:visible="isDeleteDialogOpen" :style="{width: '350px'}" header="确认" :modal="true"
@@ -56,7 +56,7 @@ export default {
       expandedKeys: {},
       editChangeCheckValue: "",
       selectedKeys: null,
-      currentSummaryNode: {"Content": "文本编辑框失去焦点后会自动保存文档..."},
+      currentSummaryNode: {"key": "0", "content": "文本编辑框失去焦点后会自动保存文档..."},
       isDeleteDialogOpen: false,
       isNewDialogOpen: false,
       tipDisplay: false,
@@ -131,11 +131,10 @@ export default {
       if (!this.newFileName) {
         return
       }
-      let parentBookId = this.currentSummaryNode === null ? "0" : this.currentSummaryNode.key
       let noteSummary = {
         "BookId": this.uuid.getUuid(),
         "BookName": this.newFileName,
-        "ParentBookId": parentBookId,
+        "ParentBookId": this.currentSummaryNode.key,
         "BookTime": new Date()
       }
       this.nodeService.addNoteSummary(noteSummary).then(res => {
@@ -173,8 +172,8 @@ export default {
 
     onNodeSelect(node) {
       this.currentSummaryNode = node
-      if (!this.currentSummaryNode.Content) {
-        this.nodeService.getNoteSummaryContent(this.currentSummaryNode.key).then(res => this.currentSummaryNode.Content = res.Content)
+      if (!this.currentSummaryNode.content) {
+        this.nodeService.getNoteSummaryContent(this.currentSummaryNode.key).then(res => this.currentSummaryNode.content = res.Content)
       }
     },
 
@@ -182,10 +181,10 @@ export default {
     },
 
     saveNoteContent(event) {
-      if (!this.currentSummaryNode || this.editChangeCheckValue === this.currentSummaryNode.Content) {
+      if (this.currentSummaryNode.key === "0" || this.editChangeCheckValue === this.currentSummaryNode.content) {
         return
       }
-      this.nodeService.updateNoteSummary({"BookId": this.currentSummaryNode.key, "Content": this.currentSummaryNode.Content})
+      this.nodeService.updateNoteSummary({"BookId": this.currentSummaryNode.key, "Content": this.currentSummaryNode.content})
     }
   }
 }
