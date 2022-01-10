@@ -1,28 +1,20 @@
 version: '3.2'
 services:
   regiu:
-    image: "regiu:1.7"
+    image: "swr.cn-east-3.myhuaweicloud.com/coregiu/regiu:1.0.0"
     ports:
       - "80:80"
-    volumes:
-      - /giu/chamberlain/books:/usr/share/nginx/html/books
     networks:
       - regiu-network
     depends_on:
       - chamberlain
   chamberlain:
-    image: "chamberlain:1.10"
+    image: "swr.cn-east-3.myhuaweicloud.com/coregiu/chamberlain:1.0.0"
     ports:
       - "8080:8080"
     volumes:
       - /var:/var
-      - /usr/bin/git:/usr/bin/git
-      - ~/.gitconfig:/root/.gitconfig
-      - ~/.git-credentials:/root/.git-credentials
-      - /usr/lib/git-core:/usr/lib/git-core
-      - /usr/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu
-      - /usr/share/git-core/templates:/usr/share/git-core/templates
-      - /giu/chamberlain/books:/giu/chamberlain/books
+      - /opt/chamberlain/runtime/chamberlain.yml:/chamberlain.yml
     networks:
       - regiu-network
     depends_on:
@@ -35,7 +27,7 @@ services:
       - /giu/chamberlain/database:/var/lib/mysql 
       - /giu/chamberlain/database:/etc/mysql/conf.d
     environment:
-      MYSQL_ROOT_PASSWORD: "199527"
+      MYSQL_ROOT_PASSWORD: ""
     networks:
       - regiu-network
 networks:
