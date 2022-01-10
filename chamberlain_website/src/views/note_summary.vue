@@ -3,7 +3,7 @@
     <div style="margin-bottom: 0;">
       <Button type="button" class="p-button-text" label="▽展开" @click="expandAll"/>
       <Button type="button" class="p-button-text" label="▷折叠" @click="collapseAll"/>
-      <Button type="button" class="p-button-text" label="✎新建" @click="opNewBookDialog"/>
+      <Button type="button" class="p-button-text" label="+新建" @click="opNewBookDialog"/>
       <Button type="button" class="p-button-text" label="✕删除" @click="openDeleteDialog"/>
     </div>
     <Tree :value="nodes" :expandedKeys="expandedKeys" @contextmenu="onMenuSelect"

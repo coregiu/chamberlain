@@ -15,10 +15,10 @@ docker run -d --name chamberlain -p 8080:8080 --link database:database  -v /var:
 docker run -it --rm --name chamberlaintest -p 8080:8080 --link database:database  -v /var:/var chamberlain:1.1
 
 [podman]
-pd pod create -n giu -p 8080:8080 -p 80:80
-pd run -d --name database --pod giu -v /root/workspace/database:/var/lib/mysql -v /root/workspace/database:/etc/mysql/conf.d -e MYSQL_ROOT_PASSWORD=199527 docker.io/library/mysql:latest
-pd run -d --name chamberlain -v /var:/var -v /giu/chamberlain/books:/giu/chamberlain/books -v /usr/bin/git:/usr/bin/git -v /usr/lib/git-core:/usr/lib/git-core -v /usr/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu -v ~/.gitconfig:/root/.gitconfig -v ~/.git-credentials:/root/.git-credentials -v /usr/share/git-core/templates:/usr/share/git-core/templates --pod giu localhost/chamberlain:1.7
-pd run -d --name regiu --pod giu -v /giu/chamberlain/books:/usr/share/nginx/html/books localhost/regiu:1.5
+docker pod create -n giu -p 8080:8080 -p 80:80
+docker run -d --name database --pod giu -v /root/workspace/database:/var/lib/mysql -v /root/workspace/database:/etc/mysql/conf.d -e MYSQL_ROOT_PASSWORD=199527 docker.io/library/mysql:latest
+docker run -d --name chamberlain -v /var:/var -v /giu/chamberlain/books:/giu/chamberlain/books -v /usr/bin/git:/usr/bin/git -v /usr/lib/git-core:/usr/lib/git-core -v /usr/lib/x86_64-linux-gnu:/usr/lib/x86_64-linux-gnu -v ~/.gitconfig:/root/.gitconfig -v ~/.git-credentials:/root/.git-credentials -v /usr/share/git-core/templates:/usr/share/git-core/templates --pod giu localhost/chamberlain:1.7
+docker run -d --name regiu --pod giu -v /giu/chamberlain/books:/usr/share/nginx/html/books localhost/regiu:1.5
 
-pd run -d --name chamberlain -v /var:/var --pod giu swr.cn-east-3.myhuaweicloud.com/coregiu/chamberlain:1.13
-pd run -d --name regiu --pod giu swr.cn-east-3.myhuaweicloud.com/coregiu/regiu:1.13
+docker run -d --name chamberlain -v /var:/var -v /root/workspace/runtime/chamberlian/chamberlain.yml:/chamberlain.yml --pod giu swr.cn-east-3.myhuaweicloud.com/coregiu/chamberlain:1.0.0
+docker run -d --name regiu --pod giu swr.cn-east-3.myhuaweicloud.com/coregiu/regiu:1.0.0

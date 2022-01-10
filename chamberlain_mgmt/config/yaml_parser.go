@@ -52,7 +52,6 @@ func ReadFileObject(contentArr *[]string, startLine int, preSpace int, reflectOb
 		case BaseType:
 			key, value := getBaseKeyValue(contentArr, iLoop)
 			fieldValue := reflectObject.Elem().FieldByName(key)
-			fmt.Println(key + "=" + value)
 			setReflectValue(fieldValue, value)
 			iLoop++
 			break

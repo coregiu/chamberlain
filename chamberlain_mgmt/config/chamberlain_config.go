@@ -9,6 +9,7 @@ import (
 	"log"
 	"os"
 	"reflect"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -82,7 +83,6 @@ func (chamberlainConfig *ChamberlainConfig) loadConfigFromFile() error {
 	}
 
 	contentArr := strings.Split(string(content), "\n")
-	fmt.Println(contentArr)
 
 	if -1 == ReadFileObject(&contentArr, 0, 0, reflect.ValueOf(chamberlainConfig)) {
 		return errors.New("failed to read config file")
@@ -92,8 +92,8 @@ func (chamberlainConfig *ChamberlainConfig) loadConfigFromFile() error {
 
 func (chamberlainConfig *ChamberlainConfig) initDbSource() {
 	dbConfig := chamberlainConfig.DatabaseConfig
-	dbUrl := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		dbConfig.Username, dbConfig.Password, dbConfig.Host, dbConfig.Port, dbConfig.Database)
+	connectArr := []string{dbConfig.Username, ":", dbConfig.Password, "@tcp(", dbConfig.Host, ":", strconv.Itoa(dbConfig.Port), ")/", dbConfig.Database, "?charset=utf8mb4&parseTime=True&loc=Local"}
+	dbUrl := strings.Join(connectArr, "")
 	var err error
 	db, err = gorm.Open(mysql.Open(dbUrl), &gorm.Config{})
 	if err != nil {

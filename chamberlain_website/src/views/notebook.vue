@@ -35,7 +35,7 @@
     <Column field="Content" header="内容" :sortable="true" sortField="Content">
       <template #body="notebookInfo">
         <span
-            :title="notebookInfo.data.Content">{{ notebookInfo.data.Content.length > 40 ? notebookInfo.data.Content.substring(0, 40) + " ..." : notebookInfo.data.Content }}</span>
+            :title="notebookInfo.data.Content">{{ notebookInfo.data.Content && notebookInfo.data.Content.length > 40 ? notebookInfo.data.Content.substring(0, 40) + " ..." : notebookInfo.data.Content }}</span>
       </template>
     </Column>
     <Column field="Level" header="级别" :sortable="true" sortField="Level">
