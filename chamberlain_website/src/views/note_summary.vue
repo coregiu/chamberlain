@@ -16,6 +16,19 @@
             @focusin="this.editChangeCheckValue = this.currentSummaryNode.content"/>
   </div>
 
+  <Dialog v-model:visible="isChangeDialogOpen" :style="{width: '350px'}" header="选择变更节点" :modal="true"
+          v-if="currentSummaryNode">
+    <div class="confirmation-content">
+      <Tree :value="[{'key':'0', 'label':'根节点','data':'根节点', 'icon': 'pi pi-fw pi-inbox', 'children':nodes}]" :expandedKeys="expandedKeys"
+            selectionMode="single" v-model:selectionKeys="selectedKeys"
+            @node-select="onChangeNodeSelect"/>
+    </div>
+    <template #footer>
+      <Button label="否" icon="pi pi-times" class="p-button-text" @click="isChangeDialogOpen = false"/>
+      <Button label="是" icon="pi pi-check" class="p-button-text" @click="changeSummaryNode"/>
+    </template>
+  </Dialog>
+
   <Dialog v-model:visible="isDeleteDialogOpen" :style="{width: '350px'}" header="确认" :modal="true"
           v-if="currentSummaryNode">
     <div class="confirmation-content">
@@ -62,6 +75,8 @@ export default {
       selectedKeys: null,
       currentSummaryNode: {"key": "0", "content": "文本编辑框失去焦点后会自动保存文档..."},
       isDeleteDialogOpen: false,
+      isChangeDialogOpen: false,
+      changeToNode: {},
       isNewDialogOpen: false,
       isNewOperation: true,
       tipDisplay: false,
@@ -127,16 +142,13 @@ export default {
         }
       }
     },
-
     onMenuSelect(event) {
       this.$refs.menu.show(event);
     },
-
     opNewBookDialog() {
       this.isNewDialogOpen = true
       this.isNewOperation = true
     },
-
     addNewBook() {
       this.submitted = true
       if (!this.newFileName) {
@@ -165,21 +177,23 @@ export default {
         location.reload()
       }
     },
-
     openDeleteDialog() {
-      if (!this.currentSummaryNode) {
+      if (this.currentSummaryNode.key === "0") {
         this.tipDisplay = true;
         this.tipMessage = "请先选择要删除的节点！";
         return
       }
       this.isDeleteDialogOpen = true
     },
-
     openUpdateDialog() {
+      if (this.currentSummaryNode.key === "0") {
+        this.tipDisplay = true;
+        this.tipMessage = "请先选择要重命名的节点！";
+        return
+      }
       this.isNewDialogOpen = true
       this.isNewOperation = false
     },
-
     deleteNoteSummary() {
       this.nodeService.deleteNoteSummary(this.currentSummaryNode).then(res => {
         if ((typeof res == "string") && (res.indexOf("err:") === 0)) {
@@ -190,25 +204,38 @@ export default {
         }
       })
     },
-
     openMoveBookDialog() {
+      if (this.currentSummaryNode.key === "0") {
+        this.tipDisplay = true;
+        this.tipMessage = "请先选择要移动的节点！";
+        return
+      }
+      this.isChangeDialogOpen = true
     },
-
     onNodeSelect(node) {
       this.currentSummaryNode = node
       if (!this.currentSummaryNode.content) {
         this.nodeService.getNoteSummaryContent(this.currentSummaryNode.key).then(res => this.currentSummaryNode.content = res.Content)
       }
     },
-
     onNodeUnSelect() {
     },
-
     saveNoteContent(event) {
       if (this.currentSummaryNode.key === "0" || this.editChangeCheckValue === this.currentSummaryNode.content) {
         return
       }
       this.nodeService.updateNoteSummary({"BookId": this.currentSummaryNode.key, "Content": this.currentSummaryNode.content})
+    },
+    onChangeNodeSelect(node) {
+      this.changeToNode = node
+    },
+    changeSummaryNode() {
+      this.isChangeDialogOpen = false
+      if (this.changeToNode.key === this.currentSummaryNode.key) {
+        return
+      }
+      this.nodeService.updateNoteSummary({"BookId": this.currentSummaryNode.key, "ParentBookId": this.changeToNode.key})
+      location.reload()
     }
   }
 }
