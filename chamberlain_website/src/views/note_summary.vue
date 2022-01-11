@@ -30,8 +30,12 @@
 
   <Dialog v-model:visible="isNewDialogOpen" :style="{width: '300px'}" header="请输入" :modal="true" class="p-fluid">
     <div class="p-field">
-      <label for="Username">请输入文件名:</label>
-      <InputText id="Username" v-model.trim="newFileName" required="true" autofocus @keyup.enter.native="addNewBook()"
+      <label for="FileName">
+        <span v-if="isNewOperation && currentSummaryNode.key!=='0'">添加 <b>{{currentSummaryNode.label}}</b> 的子文件，请输入文件名:</span>
+        <span v-if="isNewOperation && currentSummaryNode.key==='0'">添加根文件，请输入文件名:</span>
+        <span v-if="!isNewOperation">修改 <b>{{currentSummaryNode.label}}</b> 的文件名，请输入新文件名:</span>
+      </label>
+      <InputText id="FileName" v-model.trim="newFileName" required="true" autofocus @keyup.enter.native="addNewBook()"
                  :class="{'p-invalid': submitted && !newFileName}"/>
       <small class="p-invalid" v-if="submitted && !newFileName">**名称必须填写**</small>
     </div>
@@ -59,6 +63,7 @@ export default {
       currentSummaryNode: {"key": "0", "content": "文本编辑框失去焦点后会自动保存文档..."},
       isDeleteDialogOpen: false,
       isNewDialogOpen: false,
+      isNewOperation: true,
       tipDisplay: false,
       submitted: false,
       tipMessage: "",
@@ -73,6 +78,11 @@ export default {
           label: '删除',
           icon: 'pi pi-fw pi-trash',
           command: () => this.openDeleteDialog(),
+        },
+        {
+          label: '重命名',
+          icon: 'pi pi-fw pi-pencil',
+          command: () => this.openUpdateDialog(),
         },
         {
           separator: true
@@ -124,6 +134,7 @@ export default {
 
     opNewBookDialog() {
       this.isNewDialogOpen = true
+      this.isNewOperation = true
     },
 
     addNewBook() {
@@ -131,29 +142,42 @@ export default {
       if (!this.newFileName) {
         return
       }
-      let noteSummary = {
-        "BookId": this.uuid.getUuid(),
-        "BookName": this.newFileName,
-        "ParentBookId": this.currentSummaryNode.key,
-        "BookTime": new Date()
-      }
-      this.nodeService.addNoteSummary(noteSummary).then(res => {
-        if ((typeof res == "string") && (res.indexOf("err:") === 0)) {
-          this.tipDisplay = true;
-          this.tipMessage = "添加失败！";
-        } else {
-          location.reload()
+      if (this.isNewOperation) {
+        let noteSummary = {
+          "BookId": this.uuid.getUuid(),
+          "BookName": this.newFileName,
+          "ParentBookId": this.currentSummaryNode.key,
+          "BookTime": new Date()
         }
-      })
+        this.nodeService.addNoteSummary(noteSummary).then(res => {
+          if ((typeof res == "string") && (res.indexOf("err:") === 0)) {
+            this.tipDisplay = true;
+            this.tipMessage = "添加失败！";
+          } else {
+            location.reload()
+          }
+        })
+      } else {
+        if (this.newFileName === this.currentSummaryNode.label) {
+          return
+        }
+        this.nodeService.updateNoteSummary({"BookId": this.currentSummaryNode.key, "BookName": this.newFileName})
+        location.reload()
+      }
     },
 
     openDeleteDialog() {
-      if (this.currentSummaryNode === null) {
+      if (!this.currentSummaryNode) {
         this.tipDisplay = true;
         this.tipMessage = "请先选择要删除的节点！";
         return
       }
       this.isDeleteDialogOpen = true
+    },
+
+    openUpdateDialog() {
+      this.isNewDialogOpen = true
+      this.isNewOperation = false
     },
 
     deleteNoteSummary() {

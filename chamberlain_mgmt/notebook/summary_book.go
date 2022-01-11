@@ -64,6 +64,12 @@ func (summaryBook *SummaryBook) UpdateSummaryBook() error {
 			return result.Error
 		}
 	}
+	if summaryBook.BookName != "" {
+		result := dataSet.Update("BOOK_NAME", summaryBook.BookName)
+		if result.Error != nil {
+			return result.Error
+		}
+	}
 	if summaryBook.ParentBookId != "" {
 		result := dataSet.Update("PARENT_BOOK_ID", summaryBook.ParentBookId)
 		if result.Error != nil {
@@ -110,7 +116,7 @@ func (summaryBook *SummaryBook) GetSummaryBooks() ([]SummaryBook, error) {
 		return nil, errors.New("database connection is nil")
 	}
 	summaryBooks := make([]SummaryBook, 0)
-	result := db.Select("BOOK_ID, PARENT_BOOK_ID, BOOK_NAME, USERNAME, BOOK_TIME").Where("USERNAME=?", summaryBook.Username).Order("PARENT_BOOK_ID, BOOK_TIME DESC").Find(&summaryBooks)
+	result := db.Select("BOOK_ID, PARENT_BOOK_ID, BOOK_NAME, USERNAME, BOOK_TIME").Where("USERNAME=?", summaryBook.Username).Order("PARENT_BOOK_ID, BOOK_TIME ASC").Find(&summaryBooks)
 	return summaryBooks, result.Error
 }
 
