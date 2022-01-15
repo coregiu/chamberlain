@@ -6,5 +6,5 @@ DatabaseConfig:
   Host: database
   Port: 3306
   Database: chamberlain
-  Username: ""
-  Password: ""
+  Username: root
+  Password: ${MYSQL_ROOT_PASSWORD}

@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"os"
 	"reflect"
 	"strconv"
 	"strings"
@@ -234,7 +235,12 @@ func setReflectValue(fieldValue reflect.Value, value string) {
 		fieldValue.SetInt(valueInt)
 		break
 	case reflect.String:
-		fieldValue.SetString(value)
+		if strings.Index(value, "${") != 0 {
+			fieldValue.SetString(value)
+		} else {
+			passVar := value[2 : len(value)-1]
+			fieldValue.SetString(os.Getenv(passVar))
+		}
 		break
 	}
 }

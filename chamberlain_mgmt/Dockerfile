@@ -10,7 +10,8 @@ RUN go mod download &&\
     rm -rf /opt/chamberlain/chamberlain_mgmt /opt/chamberlain/chamberlain_mgmt.go
 
 #FROM scratch as runner
-FROM scratch as runner
-COPY --from=builder /opt/chamberlain/chamberlain* /
+FROM busybox:latest as runner
+WORKDIR /opt/chamberlain
+COPY --from=builder /opt/chamberlain/chamberlain* /opt/chamberlain/
 EXPOSE 8080
-CMD ["/chamberlain"]
+CMD ["/opt/chamberlain/chamberlain"]
