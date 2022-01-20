@@ -75,11 +75,11 @@ func (chamberlainConfig *ChamberlainConfig) loadConfigFromFile() error {
 		fmt.Println("failed to get work path")
 		return err
 	}
-	fmt.Println("work path = " + workPath)
-	content, ferr := ioutil.ReadFile(workPath + string(os.PathSeparator) + "chamberlain.yml")
-	if ferr != nil {
+	fmt.Printf("work path=%s\n", workPath)
+	content, err := ioutil.ReadFile(workPath + string(os.PathSeparator) + "chamberlain.yml")
+	if err != nil {
 		fmt.Println("failed to read chamberlain yml file")
-		return ferr
+		return err
 	}
 
 	contentArr := strings.Split(string(content), "\n")
@@ -98,9 +98,10 @@ func (chamberlainConfig *ChamberlainConfig) initDbSource() {
 	db, err = gorm.Open(mysql.Open(dbUrl), &gorm.Config{})
 	if err != nil {
 		log.Printf("Failed to create database connection!")
-	} else {
-		log.Printf("Get db connection successfully!" + fmt.Sprintf("%v", db.Config.AllowGlobalUpdate))
+		return
 	}
+
+	log.Printf("Get db connection successfully!")
 	sqlDb, err := db.DB()
 	if err != nil {
 		log.Printf("Failed to create database connection!")

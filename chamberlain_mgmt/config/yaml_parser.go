@@ -213,7 +213,7 @@ func getCurrentDataType(contentArr *[]string, startLine int, preSpace int, isInA
 			}
 			nextContent := (*contentArr)[startLine+1]
 			nextTrimContent := strings.Trim(nextContent, " ")
-			if strings.Index(nextTrimContent, "-") == -1 {
+			if strings.Index(nextTrimContent, "-") != 0 {
 				return Struct
 			} else {
 				return Array
