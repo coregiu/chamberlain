@@ -27,6 +27,7 @@ CREATE TABLE LOGS
     LOG_ID      bigint primary key,
     USERNAME    varchar(16),
     OPERATION   varchar(64),
+    OP_CLIENT   varchar(32),
     OP_TIME     timestamp,
     OP_RESULT   varchar(16),
     DESCRIPTION varchar(512)
@@ -58,4 +59,4 @@ CREATE TABLE NOTE_SUMMARIES
 );
 CREATE INDEX IDX_NOTE_SUMMARIES_TIME ON NOTE_SUMMARIES(PARENT_BOOK_ID, BOOK_TIME);
 
-INSERT INTO USERS VALUE ('test', 'test', 'admin');
+INSERT INTO USERS VALUES ('test', 'test', 'admin');

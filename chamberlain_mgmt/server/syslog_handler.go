@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"strconv"
+	"time"
 )
 
 func QuerySyslogHandler() gin.HandlerFunc {
@@ -70,7 +71,7 @@ func RecordLogHandler() gin.HandlerFunc {
 		if tokenId != "" {
 			token := auth.Token{}
 			token.TokenId = tokenId
-			mapToken, err := token.GetToken()
+			mapToken, err := token.GetTokenById()
 			if err != nil {
 				username = context.Writer.Header().Get("USERNAME")
 			} else {
@@ -79,7 +80,15 @@ func RecordLogHandler() gin.HandlerFunc {
 		} else {
 			username = context.Writer.Header().Get("USERNAME")
 		}
-		err := syslog.RecordOperation(username, context.Request.Method+":"+context.Request.URL.Path, strconv.Itoa(status), description)
+
+		syslog.OpTime = time.Now()
+		syslog.LogId = syslog.OpTime.Unix()
+		syslog.Operation = context.Request.Method+":"+context.Request.URL.Path
+		syslog.OpClient = context.Request.Host
+		syslog.OpResult = strconv.Itoa(status)
+		syslog.Description = description
+		syslog.Username = username
+		err := syslog.AddSyslog()
 		if err != nil {
 			log.Error("failed to record log.")
 		}

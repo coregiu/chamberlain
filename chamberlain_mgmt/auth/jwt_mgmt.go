@@ -1,7 +1,10 @@
 package auth
 
 import (
+	"chamberlain_mgmt/config"
 	"chamberlain_mgmt/log"
+	"context"
+	"encoding/json"
 	"errors"
 	"github.com/google/uuid"
 	"strings"
@@ -9,7 +12,10 @@ import (
 	"time"
 )
 
+/*local cache of token, key is tokenId, value is token struct*/
 var tokenMap = map[string]*Token{}
+
+/*local cache of token with LoginId = user+host mapping, key is user+host, value is tokenId*/
 var userTokenMap = map[string]string{}
 var authMap = map[string]string{}
 var rwLock = sync.RWMutex{}
@@ -18,6 +24,8 @@ const HourOfDay = 24
 
 type Token struct {
 	TokenId    string
+	Host       string
+	LoginId    string
 	IssueTime  time.Time
 	ExpireTime time.Time
 	Issuer     string
@@ -59,7 +67,8 @@ type TokenFunc interface {
 	CheckAuth(operation string) (bool, error)
 	CreateNewToken(user *User) error
 	DeleteToken()
-	GetToken() (*Token, error)
+	GetTokenById() (*Token, error)
+	GetTokenByUser(user *User) (*Token, error)
 }
 
 func (token *Token) CheckAuth(operation string) (bool, error) {
@@ -82,11 +91,9 @@ func (token *Token) CheckAuth(operation string) (bool, error) {
 		return false, errors.New("no authorization for no auth token")
 	}
 
-	rwLock.RLock()
-	checkedToken, isExists := tokenMap[token.TokenId]
-	rwLock.RUnlock()
+	checkedToken, err := token.GetTokenById()
 
-	if isExists {
+	if err == nil {
 		if time.Now().After(checkedToken.ExpireTime) {
 			token.DeleteToken()
 			log.Error("token has been expired")
@@ -109,26 +116,53 @@ func checkOperationAuth(role string, checkedToken *Token) (bool, error) {
 	}
 }
 
-func (token *Token) GetToken() (*Token, error) {
+func (token *Token) GetTokenById() (*Token, error) {
 	if token.TokenId == "" {
-		log.Error("token id is nil")
-		return token, errors.New("token id is nil")
+		log.Error("token id is empty")
+		return nil, errors.New("no authorization for no auth token")
 	}
-	mapToken := tokenMap[token.TokenId]
-	if mapToken == nil {
-		log.Error("no token exists")
-		return token, errors.New("no token exists")
+
+	rwLock.RLock()
+	checkedToken, isExists := tokenMap[token.TokenId]
+	rwLock.RUnlock()
+
+	// no local cache, turn to get from redis
+	if !isExists {
+		checkedToken = getValueObjFromRedis(token.TokenId)
+		if checkedToken != nil {
+			tokenMap[token.TokenId] = checkedToken
+			userTokenMap[token.LoginId] = checkedToken.TokenId
+			return checkedToken, nil
+		}
+		return nil, errors.New("token not exists")
 	}
-	log.Info("Get token %v", mapToken.User.Username)
-	return mapToken, nil
+	return checkedToken, nil
+}
+
+func (token *Token) GetTokenByUser(user *User) (string, error) {
+	if user.Username == "" {
+		log.Error("username is empty")
+		return "", errors.New("username is empty")
+	}
+
+	token.LoginId = strings.Join([]string{user.Username, token.Host}, "-")
+	rwLock.RLock()
+	checkedTokenId, isExists := userTokenMap[token.LoginId]
+	rwLock.RUnlock()
+	token.TokenId = checkedTokenId
+	token.User = user
+
+	// no local cache, turn to get from redis
+	if !isExists {
+		return getValueStrFromRedis(token.LoginId)
+	}
+	return checkedTokenId, nil
 }
 
 func (token *Token) CreateNewToken(user *User) error {
-	rwLock.RLock()
-	checkedToken, isExists := userTokenMap[user.Username]
-	rwLock.RUnlock()
+	checkedToken, err := token.GetTokenByUser(user)
 
-	if isExists {
+	if err == nil {
 		token.TokenId = checkedToken
 		user.Password = ""
 		token.User = user
@@ -150,8 +184,10 @@ func storeToken(user *User, token *Token) error {
 	token.ExpireTime = time.Now().Add(time.Hour * HourOfDay)
 	token.Issuer = user.Username
 	tokenMap[token.TokenId] = token
-
-	userTokenMap[user.Username] = token.TokenId
+	userTokenMap[token.LoginId] = token.TokenId
+	tokenByte, _ := json.Marshal(token)
+	_ = setValueToRedis(token.TokenId, string(tokenByte), time.Hour*HourOfDay)
+	_ = setValueToRedis(token.LoginId, token.TokenId, time.Hour*HourOfDay)
 	log.Info("create new token")
 	return nil
 }
@@ -162,9 +198,11 @@ func (token *Token) DeleteToken() {
 	rwLock.Lock()
 	checkedToken, isExists := tokenMap[token.TokenId]
 	if isExists {
-		delete(userTokenMap, checkedToken.User.Username)
+		delete(userTokenMap, checkedToken.LoginId)
+		_ = deleteKeyToRedis(checkedToken.LoginId)
 	}
 	delete(tokenMap, token.TokenId)
+	_ = deleteKeyToRedis(token.TokenId)
 }
 
 func inspectToken() {
@@ -178,6 +216,57 @@ func inspectToken() {
 		}
 
 		delete(tokenMap, tokenId)
-		delete(userTokenMap, inspectToken.User.Username)
+		delete(userTokenMap, inspectToken.LoginId)
 	}
+}
+
+func getValueObjFromRedis(key string) *Token {
+	redisDb := config.GetRedisConnection()
+	if redisDb == nil {
+		log.Warn("there is no redis connection")
+		return nil
+	}
+	ctx := context.Background()
+	tokenJson, err := redisDb.Get(ctx, key).Result()
+	if err != nil {
+		log.Error("failed to query redis")
+		return nil
+	}
+	token := &Token{}
+	err = json.Unmarshal([]byte(tokenJson), &token)
+	if err != nil {
+		log.Error("failed to get token from redis")
+		return nil
+	}
+	return token
+}
+
+func getValueStrFromRedis(key string) (string, error) {
+	redisDb := config.GetRedisConnection()
+	if redisDb == nil {
+		log.Warn("there is no redis connection")
+		return "", errors.New("there is no redis connection")
+	}
+	ctx := context.Background()
+	return redisDb.Get(ctx, key).Result()
+}
+
+func setValueToRedis(key string, value string, expireTime time.Duration) error {
+	redisDb := config.GetRedisConnection()
+	if redisDb == nil {
+		log.Warn("there is no redis connection")
+		return errors.New("there is no redis connection")
+	}
+	ctx := context.Background()
+	return redisDb.SetEX(ctx, key, value, expireTime).Err()
+}
+
+func deleteKeyToRedis(key string) error {
+	redisDb := config.GetRedisConnection()
+	if redisDb == nil {
+		log.Warn("there is no redis connection")
+		return errors.New("there is no redis connection")
+	}
+	ctx := context.Background()
+	return redisDb.Del(ctx, key).Err()
 }

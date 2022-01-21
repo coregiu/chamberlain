@@ -15,6 +15,7 @@ func AuthHandler() gin.HandlerFunc {
 
 		token := &auth.Token{}
 		token.TokenId = tokenId
+		token.Host = context.Request.Host
 		log.Info("request url = %s", context.Request.RequestURI)
 		url := context.Request.RequestURI
 		indexOfParam := strings.Index(url, "?")
@@ -86,7 +87,7 @@ func GetUserByTokenHandler() gin.HandlerFunc {
 		token := new(auth.Token)
 		tokenId := context.GetHeader(AuthHeader)
 		token.TokenId = tokenId
-		tokenUserInfo, err := token.GetToken()
+		tokenUserInfo, err := token.GetTokenById()
 		if err != nil {
 			context.String(500, err.Error())
 		} else {
@@ -190,6 +191,7 @@ func LoginHandler() gin.HandlerFunc {
 			context.String(500, "failed to login")
 		} else {
 			token := &auth.Token{}
+			token.Host = context.Request.Host
 			err := token.CreateNewToken(user)
 			if err != nil {
 				log.Error("failed to create token")
@@ -213,7 +215,8 @@ func LogoutHandler() gin.HandlerFunc {
 		}
 		token := &auth.Token{}
 		token.TokenId = tokenId
-		token, _ = token.GetToken()
+		token.Host = context.Request.Host
+		token, _ = token.GetTokenById()
 		token.DeleteToken()
 		context.JSON(200, gin.H{
 			"result": "logout successfully",

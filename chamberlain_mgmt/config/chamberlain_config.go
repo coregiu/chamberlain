@@ -1,8 +1,10 @@
 package config
 
 import (
+	"context"
 	"errors"
 	"fmt"
+	"github.com/go-redis/redis/v8"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"io/ioutil"
@@ -20,6 +22,9 @@ var globalConfig *ChamberlainConfig
 /*Database connection*/
 var db *gorm.DB
 
+/*redis connection*/
+var redisDb *redis.Client
+
 const DebugLevel = 0
 const InfoLevel = 1
 const WarnLevel = 2
@@ -31,6 +36,7 @@ type (
 		DatabaseConfig   *DatabaseConfig
 		BlogWorkPath     string
 		BlogRepositories *[]*BlogRepository
+		RedisConfig      *RedisConfig
 	}
 	LogConfig struct {
 		Path     string
@@ -47,6 +53,12 @@ type (
 		RepoPath string
 		RepoName string
 	}
+	RedisConfig struct {
+		Host     string
+		Port     int
+		Database int
+		Password string
+	}
 
 	Loader interface {
 		loadConfigFromFile() error
@@ -54,6 +66,7 @@ type (
 		loadDefaultDbConfig()
 		loadDefaultBlogConfig()
 		initDbSource()
+		initRedisSource()
 	}
 )
 
@@ -67,6 +80,7 @@ func init() {
 		globalConfig.loadDefaultBlogConfig()
 	}
 	globalConfig.initDbSource()
+	globalConfig.initRedisSource()
 }
 
 func (chamberlainConfig *ChamberlainConfig) loadConfigFromFile() error {
@@ -117,6 +131,23 @@ func (chamberlainConfig *ChamberlainConfig) initDbSource() {
 	sqlDb.SetConnMaxLifetime(time.Hour)
 }
 
+func (chamberlainConfig *ChamberlainConfig) initRedisSource() {
+	redisConfig := chamberlainConfig.RedisConfig
+
+	redisDb = redis.NewClient(&redis.Options{
+		Addr:     strings.Join([]string{redisConfig.Host,strconv.Itoa(redisConfig.Port)}, ":"),
+		Password: redisConfig.Password, //  password set
+		DB:       redisConfig.Database, // use default DB
+	})
+	ctx := context.Background()
+	_, err := redisDb.Ping(ctx).Result()
+	if err != nil {
+		redisDb = nil
+		log.Println("failed to connect to the redis server")
+	}
+	log.Println("connect to the redis server successfully")
+}
+
 func (chamberlainConfig *ChamberlainConfig) loadDefaultLogConfig() {
 	logConfig := new(LogConfig)
 	logConfig.Path = "/var/chamberlain.log"
@@ -163,4 +194,8 @@ func GetBlogsConfig() (BlogWorkPath string, BlogRepos *[]*BlogRepository) {
 
 func GetDbConnection() *gorm.DB {
 	return db
+}
+
+func GetRedisConnection() *redis.Client {
+	return redisDb
 }

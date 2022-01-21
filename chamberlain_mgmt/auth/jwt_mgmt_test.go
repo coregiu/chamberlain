@@ -18,7 +18,7 @@ func TestToken_Should_Successfully_When_GetToken(t *testing.T) {
 		t.Error(err.Error())
 	}
 
-	newToken, getErr := token.GetToken()
+	newToken, getErr := token.GetTokenById()
 	if getErr != nil {
 		t.Error(getErr.Error())
 	}
@@ -41,7 +41,7 @@ func TestToken_Should_Successfully_When_CreateToken(t *testing.T) {
 		t.Error(err.Error())
 	}
 
-	newToken, getErr := token.GetToken()
+	newToken, getErr := token.GetTokenById()
 	if getErr != nil {
 		t.Error(getErr.Error())
 	}

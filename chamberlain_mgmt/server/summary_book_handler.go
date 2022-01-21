@@ -128,7 +128,7 @@ func getLoginUsername(context *gin.Context) string {
 	tokenId := context.Request.Header.Get("X-AUTH-TOKEN")
 	token := auth.Token{}
 	token.TokenId = tokenId
-	mapToken, err := token.GetToken()
+	mapToken, err := token.GetTokenById()
 	if err == nil {
 		username = mapToken.User.Username
 	}

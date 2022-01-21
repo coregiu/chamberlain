@@ -33,6 +33,7 @@
     <Column field="selectIds"><Checkbox name="city" v-model="selectedLogIds" /></Column>
     <Column field="LogId" header="日志ID" :sortable="true" sortField="LogId"/>
     <Column field="Username" header="操作人" :sortable="true" sortField="Username"/>
+    <Column field="OpClient" header="客户端" :sortable="true" sortField="OpClient"/>
     <Column field="Operation" header="操作功能" :sortable="true" sortField="Operation"/>
     <Column field="OpTime" header="操作时间" :sortable="true" sortField="OpTime">
       <template #body="logData">

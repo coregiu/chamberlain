@@ -12,6 +12,7 @@ type SysLog struct {
 	Username    string    `gorm:"column:USERNAME"`
 	Operation   string    `gorm:"column:OPERATION"`
 	OpTime      time.Time `gorm:"column:OP_TIME"`
+	OpClient    string    `gorm:"column:OP_CLIENT"`
 	OpResult    string    `gorm:"column:OP_RESULT"`
 	Description string    `gorm:"column:DESCRIPTION"`
 }
@@ -40,16 +41,6 @@ func (syslog *SysLog) AddSyslog() error {
 	}
 	result := db.Create(&syslog)
 	return result.Error
-}
-
-func (syslog *SysLog) RecordOperation(username string, operation string, opResult string, description string) error {
-	syslog.OpTime = time.Now()
-	syslog.LogId = syslog.OpTime.Unix()
-	syslog.Operation = operation
-	syslog.OpResult = opResult
-	syslog.Description = description
-	syslog.Username = username
-	return syslog.AddSyslog()
 }
 
 func (syslog SysLog) BatchAddSyslog(syslogs *[]SysLog) error {

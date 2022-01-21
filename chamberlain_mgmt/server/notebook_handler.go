@@ -22,7 +22,7 @@ func AddNotebookHandler() gin.HandlerFunc {
 		tokenId := context.Request.Header.Get("X-AUTH-TOKEN")
 		token := auth.Token{}
 		token.TokenId = tokenId
-		mapToken, err := token.GetToken()
+		mapToken, err := token.GetTokenById()
 		if err == nil {
 			username := mapToken.User.Username
 			for index := range notebooks {
@@ -94,7 +94,7 @@ func GetNotebooksHandler() gin.HandlerFunc {
 		tokenId := context.Request.Header.Get("X-AUTH-TOKEN")
 		token := auth.Token{}
 		token.TokenId = tokenId
-		mapToken, err := token.GetToken()
+		mapToken, err := token.GetTokenById()
 		if err == nil {
 			username = mapToken.User.Username
 		}
