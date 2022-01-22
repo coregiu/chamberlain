@@ -84,7 +84,7 @@ func RecordLogHandler() gin.HandlerFunc {
 		syslog.OpTime = time.Now()
 		syslog.LogId = syslog.OpTime.Unix()
 		syslog.Operation = context.Request.Method+":"+context.Request.URL.Path
-		syslog.OpClient = context.Request.Host
+		syslog.OpClient = context.Request.Header.Get("X-Forward-For")
 		syslog.OpResult = strconv.Itoa(status)
 		syslog.Description = description
 		syslog.Username = username

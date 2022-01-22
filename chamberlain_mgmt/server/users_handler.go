@@ -15,8 +15,9 @@ func AuthHandler() gin.HandlerFunc {
 
 		token := &auth.Token{}
 		token.TokenId = tokenId
-		token.Host = context.Request.Host
+		token.RemoteAddr = context.Request.Header.Get("X-Forward-For")
 		log.Info("request url = %s", context.Request.RequestURI)
+		log.Info("real ip = %s", token.RemoteAddr)
 		url := context.Request.RequestURI
 		indexOfParam := strings.Index(url, "?")
 		if indexOfParam > 0 {
@@ -191,7 +192,8 @@ func LoginHandler() gin.HandlerFunc {
 			context.String(500, "failed to login")
 		} else {
 			token := &auth.Token{}
-			token.Host = context.Request.Host
+			token.RemoteAddr = context.Request.Header.Get("X-Forward-For")
+			log.Info("real ip = %s", token.RemoteAddr)
 			err := token.CreateNewToken(user)
 			if err != nil {
 				log.Error("failed to create token")
@@ -215,7 +217,8 @@ func LogoutHandler() gin.HandlerFunc {
 		}
 		token := &auth.Token{}
 		token.TokenId = tokenId
-		token.Host = context.Request.Host
+		token.RemoteAddr = context.Request.Header.Get("X-Forward-For")
+		log.Info("real ip = %s", token.RemoteAddr)
 		token, _ = token.GetTokenById()
 		token.DeleteToken()
 		context.JSON(200, gin.H{

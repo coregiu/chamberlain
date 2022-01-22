@@ -17,6 +17,7 @@ server {
     }
     location /api {
         proxy_pass http://${CHAMBERLAIN_HOST}:8080;
+        proxy_set_header X-Forward-For ${REAL_IP_VAR};
         rewrite "^/api/(.*)$" /$1 break;
     }
 

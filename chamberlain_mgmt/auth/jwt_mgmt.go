@@ -24,7 +24,7 @@ const HourOfDay = 24
 
 type Token struct {
 	TokenId    string
-	Host       string
+	RemoteAddr string
 	LoginId    string
 	IssueTime  time.Time
 	ExpireTime time.Time
@@ -145,7 +145,7 @@ func (token *Token) GetTokenByUser(user *User) (string, error) {
 		return "", errors.New("username is empty")
 	}
 
-	token.LoginId = strings.Join([]string{user.Username, token.Host}, "-")
+	token.LoginId = strings.Join([]string{user.Username, token.RemoteAddr}, "-")
 	rwLock.RLock()
 	checkedTokenId, isExists := userTokenMap[token.LoginId]
 	rwLock.RUnlock()
