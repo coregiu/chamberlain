@@ -1,8 +1,10 @@
 <template>
   <div id="YearStatistics" class="panel-chart">
     <span>
-      年度收入统计:<br>
-      <Dropdown v-model="currentYearObject" :options="yearOptions" optionLabel="name" :placeholder="currentYearObject.name" @change="changeYear"/>
+      年度收入统计: <br>
+      <Dropdown v-model="currentYearObject" :options="yearOptions" optionLabel="name" :placeholder="currentYearObject.name" @change="changeYear"/><br>
+      <br>
+      {{currentYearTotalInput}}元
     </span>
     <Chart type="pie" :data="yearTypeStatisticsData" class="inner-panel-chart" :height="394" :width="394"/>&nbsp;&nbsp;
     <Chart type="bar" :data="yearMonthStatisticsData" class="inner-panel-chart" :height="394" :width="1200"/>
@@ -25,7 +27,8 @@ export default {
       yearOptions: [],
       yearsTrendingData: {},
       yearMonthStatisticsData: {},
-      yearTypeStatisticsData: {}
+      yearTypeStatisticsData: {},
+      currentYearTotalInput: 0.0
     }
   },
   inputService: null,
@@ -83,10 +86,14 @@ export default {
       this.inputService.getYearTypeStatisticsData(this.currentYear).then(queryData => {
         let labels = []
         let displayData = []
+        let sumInput = 0.0
         queryData.forEach(function (aTypeData) {
           labels.push(aTypeData.Type)
           displayData.push(aTypeData.AllInput)
+          sumInput += aTypeData.AllInput
         })
+
+        this.currentYearTotalInput = sumInput
 
         this.yearTypeStatisticsData = {
           "labels": labels, "datasets": [{
