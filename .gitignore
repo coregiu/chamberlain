@@ -1,6 +1,5 @@
 .idea
 node_modules
-upx
 dist
 books
 server*.key
