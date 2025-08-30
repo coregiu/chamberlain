@@ -1,4 +1,4 @@
-version: '3.2'
+version: '3.8'
 services:
   regiu:
     image: "regiu:1.0"
@@ -8,18 +8,24 @@ services:
       - regiu-network
     depends_on:
       - chamberlain
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
   chamberlain:
     image: "chamberlain:1.0"
     ports:
       - "8080:8080"
     volumes:
-      - /var:/var
-      - /home/coregiu/workspace/runtime/chamberlain/chamberlain.yml:/chamberlain.yml
+      - /home/coregiu/workspace/runtime/chamberlain/chamberlain.yml:/opt/chamberlain/chamberlain.yml
     networks:
       - regiu-network
     depends_on:
       - database
       - redis
+    restart: unless-stopped
   database:
     image: "mysql:latest"
     ports:
@@ -31,14 +37,16 @@ services:
       MYSQL_ROOT_PASSWORD: ""
     networks:
       - regiu-network
+    restart: unless-stopped
   redis:
     image: "redis:latest"
     ports:
       - "6379:6379"
     environment:
-      MYSQL_ROOT_PASSWORD: ""
+      REDIS_ROOT_PASSWORD: ""
     networks:
       - regiu-network
+    restart: unless-stopped
 networks:
   regiu-network:
     driver: overlay
