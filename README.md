@@ -25,9 +25,30 @@ docker build -t chamberlain:1.0 .
 ```
 5. Set the image version to docker-compose.yml
 6. Pull mysql image
+
 7. Run docker compose:
 ```shell
-docker-compose up&
+# start as cluster
+# 创建集群
+docker swarm init --advertise-addr xx.xx.xx.xx
+
+# 启动服务
+docker stack deploy chamberlain --compose-file docker-compose.yaml
+# 删除服务
+docker stack remove chamberlain
+# 查看服务
+docker service ls
+docker service logs vjdew7q0hmvr
+
+# 导入数据
+## 进入容器
+docker exec -it 8e3537249b94 /bin/sh 
+## 创建新库
+mysql -u root -p
+CREATE DATABASE chamberlain;
+
+## 导入库表
+mysql -u root -D chamberlain -p
 ```
 8. Docker exec the mysql container, init database and tables. The sql is chamberlain.sql.
 9. Then you can open the page in browse and operate it.

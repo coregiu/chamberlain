@@ -1,7 +1,7 @@
 version: '3.2'
 services:
   regiu:
-    image: "swr.cn-east-3.myhuaweicloud.com/coregiu/regiu:1.0.0"
+    image: "regiu:1.0"
     ports:
       - "80:80"
     networks:
@@ -9,23 +9,32 @@ services:
     depends_on:
       - chamberlain
   chamberlain:
-    image: "swr.cn-east-3.myhuaweicloud.com/coregiu/chamberlain:1.0.0"
+    image: "chamberlain:1.0"
     ports:
       - "8080:8080"
     volumes:
       - /var:/var
-      - /opt/chamberlain/runtime/chamberlain.yml:/chamberlain.yml
+      - /home/coregiu/workspace/runtime/chamberlain/chamberlain.yml:/chamberlain.yml
     networks:
       - regiu-network
     depends_on:
       - database
+      - redis
   database:
     image: "mysql:latest"
     ports:
       - "3306:3306"
     volumes:
-      - /giu/chamberlain/database:/var/lib/mysql 
-      - /giu/chamberlain/database:/etc/mysql/conf.d
+      - /home/coregiu/workspace/runtime/chamberlain/database:/var/lib/mysql 
+      - /home/coregiu/workspace/runtime/chamberlain/database:/etc/mysql/conf.d
+    environment:
+      MYSQL_ROOT_PASSWORD: ""
+    networks:
+      - regiu-network
+  redis:
+    image: "redis:latest"
+    ports:
+      - "6379:6379"
     environment:
       MYSQL_ROOT_PASSWORD: ""
     networks:
