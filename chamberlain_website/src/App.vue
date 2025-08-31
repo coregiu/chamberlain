@@ -6,7 +6,7 @@
     <div id="content">
       <router-view/>
     </div>
-    <div id="foot">©2021 COREGIU | <a href="https://github.com/coregiu" target="_blank">https://github.com/coregiu</a> |
+    <div id="foot">©2021-2027 COREGIU | <a href="https://github.com/coregiu" target="_blank">https://github.com/coregiu</a> |
       火在水上未济，君子以慎辨物居方。
     </div>
   </div>

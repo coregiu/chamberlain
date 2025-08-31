@@ -1,6 +1,7 @@
 .idea
 node_modules
 dist
+books
 server*.key
 server.pem
 package-lock.json
