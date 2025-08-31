@@ -8,7 +8,7 @@
              v-model:selection="selectedLogIds" selectionMode="multiple">
 
     <template #header>
-      <div>
+      <div class="header-container">
         <div style="float:left">系统操作日志列表</div>
         <div style="float:right">
           <Button type="button" class="p-button-secondary" @click="openDeleteSyslogDialog">批量删除</Button>&nbsp;&nbsp;&nbsp;&nbsp;

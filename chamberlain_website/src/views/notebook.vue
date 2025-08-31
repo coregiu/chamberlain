@@ -7,7 +7,7 @@
              currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries">
 
     <template #header>
-      <div>
+      <div class="header-container">
         <div style="float:left">我的待办列表</div>
         <div style="float:right">
           <Button type="button" class="p-button-secondary" @click="addNotebookDialog">添加待办</Button>&nbsp;

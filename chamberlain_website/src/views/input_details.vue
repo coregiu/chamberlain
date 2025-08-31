@@ -7,7 +7,7 @@
              currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries">
 
     <template #header>
-      <div>
+      <div class="header-container">
         <div style="float:left">收入列表</div>
         <div style="float:right">
           <Button type="button" class="p-button-secondary" @click="addInputDialog">添加收入信息</Button>&nbsp;

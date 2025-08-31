@@ -8,7 +8,7 @@
              currentPageReportTemplate="Showing {first} to {last} of {totalRecords} entries">
 
     <template #header>
-      <div>
+      <div class="header-container">
         <div style="float:left">用户列表</div>
         <div style="float:right">
           <Button type="button" class="p-button-secondary" @click="addUserDialog">添加用户</Button>&nbsp;&nbsp;&nbsp;&nbsp;
