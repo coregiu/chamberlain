@@ -1,0 +1,34 @@
+# ============================================================
+# Prometheus 抓取配置
+# 默认抓取 cAdvisor(8080) 与 Prometheus 自身(9090)
+# ============================================================
+global:
+  scrape_interval: 15s        # 默认抓取间隔
+  evaluation_interval: 15s    # 告警规则评估间隔
+  external_labels:
+    monitor: 'docker-stack'
+
+# 告警规则文件（可按需在此目录新增 *_rules.yml）
+rule_files:
+  # - 'alerts.yml'
+
+# 抓取任务
+scrape_configs:
+  # ---- 抓取 cAdvisor 容器指标 ----
+  - job_name: 'cadvisor'
+    scrape_interval: 15s
+    static_configs:
+      - targets: ['cadvisor:8080']
+        labels:
+          source: 'docker'
+
+  # ---- 抓取 Prometheus 自身指标（用于监控监控系统） ----
+  - job_name: 'prometheus'
+    scrape_interval: 15s
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # ---- 抓取宿主机 Node 指标（可选：单独部署 node-exporter 后启用） ----
+  # - job_name: 'node-exporter'
+  #   static_configs:
+  #     - targets: ['node-exporter:9100']

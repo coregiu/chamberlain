@@ -1,0 +1,157 @@
+{
+  "title": "Docker 容器监控 (cAdvisor)",
+  "uid": "docker-container-monitor",
+  "schemaVersion": 39,
+  "version": 1,
+  "timezone": "browser",
+  "refresh": "15s",
+  "time": { "from": "now-1h", "to": "now" },
+  "tags": ["docker", "cadvisor"],
+  "templating": {
+    "list": [
+      {
+        "name": "container",
+        "label": "容器",
+        "type": "query",
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "query": "label_values(container_cpu_usage_seconds_total{image!=\"\"}, name)",
+        "refresh": 2,
+        "multi": false,
+        "includeAll": false,
+        "current": { "text": "all", "value": "all" }
+      },
+      {
+        "name": "instance",
+        "label": "实例",
+        "type": "query",
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "query": "label_values(container_cpu_usage_seconds_total, instance)",
+        "refresh": 2,
+        "multi": false,
+        "includeAll": true,
+        "current": { "text": "All", "value": "$__all" }
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "CPU 使用率 (%)",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "custom": { "drawStyle": "line", "lineWidth": 2, "fillOpacity": 10 }
+        }
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(container_cpu_usage_seconds_total{name=~\"$container\"}[1m])) by (name) * 100",
+          "legendFormat": "{{name}}"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "内存使用 (MB)",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "decmbytes",
+          "custom": { "drawStyle": "line", "lineWidth": 2, "fillOpacity": 10 }
+        }
+      },
+      "targets": [
+        {
+          "expr": "sum(container_memory_working_set_bytes{name=~\"$container\"}) by (name) / 1024 / 1024",
+          "legendFormat": "{{name}}"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "网络接收速率 (KB/s)",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "kbps",
+          "custom": { "drawStyle": "line", "lineWidth": 2, "fillOpacity": 10 }
+        }
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(container_network_receive_bytes_total{name=~\"$container\"}[1m])) by (name) / 1024",
+          "legendFormat": "{{name}}"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "网络发送速率 (KB/s)",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "kbps",
+          "custom": { "drawStyle": "line", "lineWidth": 2, "fillOpacity": 10 }
+        }
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(container_network_transmit_bytes_total{name=~\"$container\"}[1m])) by (name) / 1024",
+          "legendFormat": "{{name}}"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "磁盘使用率 (%)",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "custom": { "drawStyle": "line", "lineWidth": 2, "fillOpacity": 10 }
+        }
+      },
+      "targets": [
+        {
+          "expr": "sum(container_fs_usage_bytes{name=~\"$container\"}) by (name) / sum(container_fs_limit_bytes{name=~\"$container\"}) by (name) * 100",
+          "legendFormat": "{{name}}"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "容器存活状态 (1=运行)",
+      "type": "stat",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": { "showThresholdLabels": true }
+        }
+      },
+      "targets": [
+        {
+          "expr": "max(time() - container_start_time_seconds{name=~\"$container\"} > 0) by (name)",
+          "legendFormat": "{{name}} 已运行"
+        }
+      ],
+      "options": { "colorMode": "value", "graphMode": "area", "justifyMode": "center" }
+    }
+  ]
+}

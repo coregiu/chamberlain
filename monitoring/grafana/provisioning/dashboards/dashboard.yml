@@ -1,0 +1,15 @@
+# ============================================================
+# Grafana 仪表盘自动加载配置
+# 把仪表盘 JSON 放入 ../dashboards/ 目录即自动导入
+# ============================================================
+apiVersion: 1
+
+providers:
+  - name: 'docker-monitoring'
+    orgId: 1
+    folder: 'Docker'
+    type: file
+    disableDeletion: false
+    updateIntervalSeconds: 30
+    options:
+      path: /var/lib/grafana/dashboards

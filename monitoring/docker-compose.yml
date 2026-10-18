@@ -1,0 +1,75 @@
+# ============================================================
+# cAdvisor + Prometheus + Grafana 容器监控栈
+# 一键启动:  docker compose up -d
+# 停止:      docker compose down
+# 清数据重启: docker compose down -v && docker compose up -d
+# ============================================================
+version: "3.8"
+
+services:
+  # ---- 1. cAdvisor: 采集主机和容器的 CPU/内存/网络/磁盘指标 ----
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    restart: unless-stopped
+    privileged: true
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    devices:
+      - /dev/kmsg
+    ports:
+      - "8080:8080"          # cAdvisor Web UI / 指标端口
+    networks:
+      - monitor
+
+  # ---- 2. Prometheus: 抓取 cAdvisor 指标并存储 ----
+  prometheus:
+    image: prom/prometheus:v2.53.0
+    container_name: prometheus
+    restart: unless-stopped
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus          # 指标持久化
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'  # 数据保留 30 天
+    ports:
+      - "9090:9090"          # Prometheus UI / API
+    depends_on:
+      - cadvisor
+    networks:
+      - monitor
+
+  # ---- 3. Grafana: 可视化与告警面板 ----
+  grafana:
+    image: grafana/grafana:11.1.0
+    container_name: grafana
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin123    # 首次登录后请立即修改
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SERVER_ROOT_URL=http://localhost:3000
+    volumes:
+      - grafana_data:/var/lib/grafana          # 面板/用户持久化
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro   # 自动配置数据源与仪表盘
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro   # 预置仪表盘 JSON
+    ports:
+      - "3000:3000"          # Grafana Web UI
+    depends_on:
+      - prometheus
+    networks:
+      - monitor
+
+volumes:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  monitor:
+    driver: bridge
