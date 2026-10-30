@@ -51,9 +51,9 @@ CREATE DATABASE chamberlain;
 mysql -u root -D chamberlain -p
 
 # 二 单独启动
-docker run -d --name redis -p 6379:6379 -e MYSQL_ROOT_PASSWORD=xxxxxx redis:latest
-docker run -d --name database -v /home/coregiu/workspace/runtime/chamberlain/database:/var/lib/mysql -v /home/coregiu/workspace/runtime/chamberlain/database:/etc/mysql/conf.d -p 3306:3306 -e MYSQL_ROOT_PASSWORD=xxxxxx mysql:latest
-docker run -d --name chamberlain -v /var:/var -v /home/coregiu/workspace/runtime/chamberlain/chamberlain.yml:/opt/chamberlain/chamberlain.yml --link database:database --link redis:redis -p 8080:8080 -e MYSQL_ROOT_PASSWORD=xxxxxx -e REDIS_ROOT_PASSWORD=xxxxxx chamberlain:1.0
+docker run -d --name cache -p 6379:6379 redis:latest --requirepass "xxxxxx"
+docker run -d --name database -v /home/regiu/workspace/runtime/chamberlain/database:/var/lib/mysql -v /home/regiu/workspace/runtime/chamberlain/database:/etc/mysql/conf.d -p 3306:3306 -e MYSQL_ROOT_PASSWORD=xxxxxx mysql:latest
+docker run -d --name chamberlain -v /var:/var -v /home/regiu/workspace/runtime/chamberlain/chamberlain.yml:/opt/chamberlain/chamberlain.yml --link database:database --link cache:cache -p 8080:8080 -e MYSQL_ROOT_PASSWORD=xxxxxx -e REDIS_ROOT_PASSWORD=xxxxxx chamberlain:1.0
 docker run -d --name regiu --link chamberlain:chamberlain -p 80:80 regiu:1.0
 ```
 8. Docker exec the mysql container, init database and tables. The sql is chamberlain.sql.

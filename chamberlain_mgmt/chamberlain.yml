@@ -9,7 +9,7 @@ DatabaseConfig:
   Username: root
   Password: ${MYSQL_ROOT_PASSWORD}
 RedisConfig:
-  Host: redis
+  Host: cache
   Port: 6379
   Database: 0
   Password: ${REDIS_ROOT_PASSWORD}
